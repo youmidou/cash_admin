@@ -39,9 +39,14 @@ def api_stats():
     api = GameServerAPI()
     
     try:
-        # 获取在线用户数量
+        # 获取在线用户数据
         online_data = api.get_online_users()
-        online_count = online_data.get('online_user_num', 0) if online_data.get('error') is None else 0
+        if online_data.get('error'):
+            return jsonify({'error': online_data['error']}), 500
+        
+        # 获取在线用户数量
+        online_users = online_data.get('data', [])
+        online_count = online_data.get('online_user_num', len(online_users))
         
         # 获取系统信息
         system_info = api.get_system_info()
@@ -52,9 +57,10 @@ def api_stats():
         stats = {
             'total_users': user_map_data.get('total', 5) if user_map_data.get('error') is None else 5,
             'online_users': online_count,
-            'server_status': 'online' if online_data.get('error') is None else 'offline',
+            'server_status': 'online',
             'system_info': system_info,
-            'user_map': user_map_data
+            'user_map': user_map_data,
+            'online_users_list': online_users
         }
         
         return jsonify(stats)

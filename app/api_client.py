@@ -1,11 +1,5 @@
-import socket
-import struct
+import requests
 import json
-import time
-from Crypto.Cipher import DES
-from Crypto.Util.Padding import pad
-import base64
-import hashlib
 from flask import current_app
 
 class GameServerAPI:
@@ -13,279 +7,172 @@ class GameServerAPI:
         # 从配置中获取服务器设置
         if current_app:
             self.host = current_app.config.get('GAME_SERVER_HOST', 'localhost')
-            self.port = current_app.config.get('GAME_SERVER_PORT', 1249)
-            self.admin_key = current_app.config.get('GAME_SERVER_ADMIN_KEY', 'cash_admin_2024_secret_key')
+            self.port = current_app.config.get('GAME_SERVER_PORT', 5000)
+            self.admin_key = current_app.config.get('GAME_SERVER_ADMIN_KEY', 'admin_key_20250906')
         else:
             # 默认配置
             self.host = 'localhost'
-            self.port = 1249
-            self.admin_key = 'cash_admin_2024_secret_key'
+            self.port = 5000
+            self.admin_key = 'admin_key_20250906'
         
-        self.socket = None
-        self.connected = False
-        
-    def _connect(self):
-        """连接到游戏服务器"""
-        try:
-            if self.socket:
-                self.socket.close()
-            
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.settimeout(10)
-            self.socket.connect((self.host, self.port))
-            self.connected = True
-            return True
-        except Exception as e:
-            print(f"连接失败: {e}")
-            self.connected = False
-            return False
+        self.base_url = f"http://{self.host}:{self.port}"
+        self.headers = {
+            'X-Admin-Key': self.admin_key,
+            'Content-Type': 'application/json'
+        }
     
-    def _disconnect(self):
-        """断开连接"""
-        if self.socket:
-            self.socket.close()
-            self.socket = None
-        self.connected = False
-    
-    def _encrypt(self, data):
-        """加密数据"""
+    def _make_request(self, method, endpoint, data=None):
+        """发送HTTP请求"""
         try:
-            # 使用与游戏服务器相同的加密方式
-            key = hashlib.md5('cash_admin_2024_secret_key'.encode('utf-8')).digest()[:8]
-            iv = hashlib.md5('cash_admin_2024_secret_key'.encode('utf-8')).digest()[:8]
+            url = f"{self.base_url}{endpoint}"
             
-            cipher = DES.new(key, DES.MODE_CBC, iv)
-            padded_data = pad(data.encode('utf-8'), 8)
-            encrypted = cipher.encrypt(padded_data)
-            return base64.b64encode(encrypted).decode('utf-8')
-        except Exception as e:
-            print(f"加密失败: {e}")
-            return None
-    
-    def _makeu(self, encrypted_data):
-        """生成 makeu 格式的数据"""
-        try:
-            # 简单的 makeu 实现
-            return encrypted_data
-        except Exception as e:
-            print(f"makeu 失败: {e}")
-            return None
-    
-    def _send_request(self, command, data=None):
-        """发送请求到游戏服务器"""
-        try:
-            if not self.connected:
-                if not self._connect():
-                    return {'error': '无法连接到游戏服务器'}
-            
-            # 准备请求数据
-            request_data = {
-                'cmd': command
-            }
-            if data:
-                request_data.update(data)
-            
-            # 转换为 JSON
-            json_data = json.dumps(request_data)
-            
-            # 添加长度头 (使用网络字节序，与游戏服务器一致)
-            length = len(json_data.encode('utf-8'))
-            header = struct.pack('!I', length)
-            
-            # 发送数据
-            self.socket.send(header + json_data.encode('utf-8'))
-            
-            # 接收响应
-            response_header = self.socket.recv(4)
-            if len(response_header) != 4:
-                return {'error': '响应头长度错误'}
-            
-            response_length = struct.unpack('!I', response_header)[0]
-            response_data = b''
-            
-            while len(response_data) < response_length:
-                chunk = self.socket.recv(response_length - len(response_data))
-                if not chunk:
-                    return {'error': '连接中断'}
-                response_data += chunk
-            
-            # 解析响应
-            response_json = json.loads(response_data.decode('utf-8'))
-            return response_json
-            
-        except Exception as e:
-            print(f"发送请求失败: {e}")
-            self.connected = False
-            return {'error': f'请求失败: {str(e)}'}
-    
-    def _login_admin(self):
-        """以管理员身份登录"""
-        try:
-            # 发送登录请求，使用 admin_key 参数
-            login_data = {
-                'uuid': 'cash_admin_uuid',
-                'device_id': 'cash_admin_device',
-                'version': '1.0.0',
-                'admin_key': 'admin_key_20250906'  # 使用游戏服务器中定义的管理员密钥
-            }
-            
-            response = self._send_request('CMD_LOGIN', login_data)
-            if response.get('success') or 'credential' in response:
-                print("管理员登录成功")
-                return True
+            if method.upper() == 'GET':
+                response = requests.get(url, headers=self.headers, timeout=10)
+            elif method.upper() == 'POST':
+                response = requests.post(url, headers=self.headers, json=data, timeout=10)
             else:
-                print(f"管理员登录失败: {response}")
-                return False
+                return {'error': f'不支持的HTTP方法: {method}'}
+            
+            # 检查响应状态
+            if response.status_code == 401:
+                return {'error': 'Unauthorized', 'message': 'Invalid admin key'}
+            elif response.status_code != 200:
+                return {'error': f'HTTP {response.status_code}', 'message': response.text}
+            
+            # 解析JSON响应
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return {'error': 'Invalid JSON response', 'message': response.text}
                 
+        except requests.exceptions.ConnectionError:
+            return {'error': 'Connection refused', 'message': '无法连接到游戏服务器'}
+        except requests.exceptions.Timeout:
+            return {'error': 'Request timeout', 'message': '请求超时'}
         except Exception as e:
-            print(f"管理员登录异常: {e}")
-            return False
-    
-    def _ensure_admin_login(self):
-        """确保已以管理员身份登录"""
-        if not self.connected:
-            if not self._connect():
-                return False
-        
-        # 尝试登录管理员
-        return self._login_admin()
+            return {'error': f'Request failed: {str(e)}'}
     
     # 用户管理相关 API
     def get_users(self, page=1, limit=50, search=None):
         """获取用户列表"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        data = {'page': page, 'limit': limit}
+        params = {'page': page, 'limit': limit}
         if search:
-            data['search'] = search
+            params['search'] = search
         
-        return self._send_request('CMD_ADMIN_GET_USERS', data)
+        endpoint = '/api/admin/users'
+        if params:
+            query_string = '&'.join([f'{k}={v}' for k, v in params.items()])
+            endpoint += f'?{query_string}'
+        
+        return self._make_request('GET', endpoint)
     
     def get_online_users(self):
-        """获取在线用户数量"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_INDEX_GET_PERSON_NUM')
-    
-    def get_user_map(self):
-        """获取用户映射信息"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_USER_MAP')
+        """获取在线用户列表"""
+        return self._make_request('GET', '/api/admin/online-users')
     
     def get_system_info(self):
-        """获取系统信息（包含在线用户）"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_SYSTEM')
+        """获取系统信息"""
+        return self._make_request('GET', '/api/admin/system')
     
     def get_user_info(self, user_id):
         """获取用户详细信息"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_USERS', {'uid': user_id})
+        return self._make_request('GET', f'/api/admin/user/{user_id}')
+    
+    def kick_user(self, user_id):
+        """踢出用户"""
+        return self._make_request('POST', f'/api/admin/user/{user_id}/kick')
+    
+    def ban_user(self, user_id, duration=3600):
+        """封禁用户"""
+        data = {'duration': duration}
+        return self._make_request('POST', f'/api/admin/user/{user_id}/ban', data)
+    
+    def unban_user(self, user_id):
+        """解封用户"""
+        return self._make_request('POST', f'/api/admin/user/{user_id}/unban')
+    
+    def modify_user_coins(self, user_id, coins):
+        """修改用户金币"""
+        data = {'coins': coins}
+        return self._make_request('POST', f'/api/admin/user/{user_id}/coins', data)
+    
+    def modify_user_level(self, user_id, level):
+        """修改用户等级"""
+        data = {'level': level}
+        return self._make_request('POST', f'/api/admin/user/{user_id}/level', data)
+    
+    def send_broadcast(self, message):
+        """发送广播消息"""
+        data = {'message': message}
+        return self._make_request('POST', '/api/admin/broadcast', data)
+    
+    def health_check(self):
+        """健康检查"""
+        return self._make_request('GET', '/health')
+    
+    # 兼容性方法 - 保持与原有代码的兼容性
+    def get_user_map(self):
+        """获取用户映射信息 - 兼容性方法"""
+        return self.get_users()
     
     def update_user(self, user_id, updates):
-        """更新用户信息"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        data = {'uid': user_id, 'updates': updates}
-        return self._send_request('CMD_ADMIN_GET_USERS', data)
+        """更新用户信息 - 兼容性方法"""
+        # 这里可以根据updates的内容调用不同的方法
+        if 'coins' in updates:
+            return self.modify_user_coins(user_id, updates['coins'])
+        elif 'level' in updates:
+            return self.modify_user_level(user_id, updates['level'])
+        else:
+            return {'error': 'Unsupported update operation'}
     
     def delete_account(self, user_id):
-        """删除用户账户"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_USERS', {'uid': user_id, 'action': 'delete'})
+        """删除用户账户 - 兼容性方法"""
+        # 这里可以实现删除逻辑，或者返回错误
+        return {'error': 'Delete account not implemented'}
     
     def send_prize(self, user_id, prize_data):
-        """发送奖励给用户"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        data = {'uid': user_id, 'prize': prize_data}
-        return self._send_request('CMD_ADMIN_SEND_PRIZE', data)
+        """发送奖励给用户 - 兼容性方法"""
+        # 这里可以实现奖励发送逻辑
+        return {'error': 'Send prize not implemented'}
     
-    # 主题管理相关 API
+    # 主题管理相关 API - 兼容性方法
     def get_themes(self):
-        """获取所有主题列表"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_THEMES')
+        """获取所有主题列表 - 兼容性方法"""
+        return {'error': 'Themes API not implemented'}
     
     def get_theme(self, theme_id):
-        """获取特定主题信息"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_THEME', {'tid': theme_id})
+        """获取特定主题信息 - 兼容性方法"""
+        return {'error': 'Theme API not implemented'}
     
     def get_theme_config(self, theme_id):
-        """获取主题配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_THEME_CONFIG', {'tid': theme_id})
+        """获取主题配置 - 兼容性方法"""
+        return {'error': 'Theme config API not implemented'}
     
     def set_theme_config(self, theme_id, config):
-        """设置主题配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        data = {'tid': theme_id, 'config': config}
-        return self._send_request('CMD_ADMIN_SET_THEME_CONFIG', data)
+        """设置主题配置 - 兼容性方法"""
+        return {'error': 'Set theme config API not implemented'}
     
-    # 配置管理相关 API
+    # 配置管理相关 API - 兼容性方法
     def get_daily_config(self):
-        """获取每日配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_DAILY_CONFIG')
+        """获取每日配置 - 兼容性方法"""
+        return {'error': 'Daily config API not implemented'}
     
     def set_daily_config(self, config):
-        """设置每日配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_SET_DAILY_CONFIG', {'config': config})
+        """设置每日配置 - 兼容性方法"""
+        return {'error': 'Set daily config API not implemented'}
     
     def get_activity_config(self):
-        """获取活动配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_ACTIVITY_CONFIG')
+        """获取活动配置 - 兼容性方法"""
+        return {'error': 'Activity config API not implemented'}
     
     def set_activity_config(self, config):
-        """设置活动配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_SET_ACTIVITY_CONFIG', {'config': config})
+        """设置活动配置 - 兼容性方法"""
+        return {'error': 'Set activity config API not implemented'}
     
     def get_ac_config(self):
-        """获取 AC 配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_GET_AC_CONFIG')
+        """获取 AC 配置 - 兼容性方法"""
+        return {'error': 'AC config API not implemented'}
     
     def set_ac_config(self, config):
-        """设置 AC 配置"""
-        if not self._ensure_admin_login():
-            return {'error': '管理员登录失败'}
-        
-        return self._send_request('CMD_ADMIN_SET_AC_CONFIG', {'config': config})
-    
-    def __del__(self):
-        """析构函数，确保连接被关闭"""
-        self._disconnect()
+        """设置 AC 配置 - 兼容性方法"""
+        return {'error': 'Set AC config API not implemented'}

@@ -82,10 +82,12 @@
                     <thead class="table-dark">
                         <tr>
                             <th>用户ID</th>
+                            <th>用户名</th>
                             <th>等级</th>
                             <th>VIP等级</th>
                             <th>金币</th>
                             <th>宝石</th>
+                            <th>累积充值</th>
                             <th>状态</th>
                             <th>平台</th>
                             <th>最后登录</th>
@@ -96,6 +98,7 @@
                         {% for user in users_data.users %}
                         <tr>
                             <td><strong>{{ user.id }}</strong></td>
+                            <td>{{ user.username or ('User_' + user.id|string) }}</td>
                             <td>
                                 <span class="badge bg-primary">{{ user.level }}</span>
                             </td>
@@ -104,6 +107,7 @@
                             </td>
                             <td>{{ "{:,}".format(user.coins) }}</td>
                             <td>{{ "{:,}".format(user.gems) }}</td>
+                            <td>{{ "{:,}".format(user.total_purchase) }}</td>
                             <td>
                                 {% if user.is_online %}
                                     <span class="badge bg-success">

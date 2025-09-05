@@ -31,29 +31,43 @@ def user_list():
         'online_count': online_count
     }
     
-    # 从系统信息中获取在线用户
-    if system_info.get('error') is None:
-        sample_users = system_info.get('users', [])
-        ccu = system_info.get('ccu', 0)
+    # 从在线用户数据中获取用户信息
+    if online_data.get('error') is None and online_data.get('data'):
+        online_users = online_data.get('data', [])
         
-        # 为每个在线用户创建基本信息
-        for user_id in sample_users:
+        # 为每个在线用户创建详细信息
+        for user in online_users:
             user_info = {
-                'id': user_id,
-                'level': 1,  # 默认等级
-                'vip_level': 0,  # 默认VIP等级
-                'coins': 0,  # 默认金币
-                'gems': 0,  # 默认宝石
-                'register_time': 'N/A',
-                'last_login': 'N/A',
+                'id': user.get('user_id', 'N/A'),
+                'username': user.get('username', f'User_{user.get("user_id", "N/A")}'),
+                'level': user.get('level', 1),
+                'vip_level': user.get('vip_level', 0),  # 从用户数据获取VIP等级
+                'coins': user.get('coins', 0),
+                'gems': user.get('gems', 0),  # 从用户数据获取宝石
+                'total_purchase': user.get('total_purchase', 0),  # 累积充值
+                'register_time': user.get('register_time', 'N/A'),
+                'last_login': user.get('login_time', 'N/A'),
                 'is_online': True,  # 这些是从在线用户列表获取的
-                'platform_type': 'Unknown',
+                'platform_type': user.get('platform_type', 'Unknown'),
                 'device_model': 'Unknown'
             }
             users_data['users'].append(user_info)
         
-        users_data['total'] = len(sample_users)
-        users_data['online_count'] = ccu
+        users_data['total'] = len(online_users)
+        users_data['online_count'] = len(online_users)
+        
+        # 实现搜索功能
+        if search:
+            # 根据用户ID或用户名进行搜索
+            filtered_users = []
+            for user in users_data['users']:
+                user_id_str = str(user['id'])
+                username = user.get('username', '')
+                if (search.lower() in user_id_str.lower() or 
+                    search.lower() in username.lower()):
+                    filtered_users.append(user)
+            users_data['users'] = filtered_users
+            users_data['total'] = len(filtered_users)
     else:
         # 如果无法获取系统信息，显示错误信息
         users_data = {
@@ -193,20 +207,22 @@ def api_online_users():
     api = GameServerAPI()
     
     try:
-        # 获取在线用户数量
+        # 获取在线用户数据
         online_data = api.get_online_users()
-        online_count = online_data.get('online_user_num', 0) if online_data.get('error') is None else 0
+        if online_data.get('error'):
+            return jsonify({'error': online_data['error']}), 500
         
-        # 获取系统信息（包含在线用户列表）
+        # 获取在线用户列表和数量
+        online_users = online_data.get('data', [])
+        online_count = online_data.get('online_user_num', len(online_users))
+        
+        # 获取系统信息
         system_info = api.get_system_info()
-        
-        # 获取用户映射信息
-        user_map_data = api.get_user_map()
         
         return jsonify({
             'online_count': online_count,
+            'online_users': online_users,
             'system_info': system_info,
-            'user_map': user_map_data,
             'timestamp': int(time.time())
         })
     except Exception as e:
