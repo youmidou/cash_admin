@@ -1,9 +1,19 @@
 from flask import render_template, request, jsonify, flash, redirect, url_for
 from app.main import bp
 from app.api_client import GameServerAPI
+from app.auth import login_required
 
 @bp.route('/')
+def index():
+    """首页重定向到登录或仪表板"""
+    from flask import session
+    if 'admin_logged_in' in session:
+        return redirect(url_for('main.dashboard'))
+    else:
+        return redirect(url_for('auth.login'))
+
 @bp.route('/dashboard')
+@login_required
 def dashboard():
     """仪表板页面"""
     api = GameServerAPI()
@@ -23,6 +33,7 @@ def dashboard():
                          themes_data=themes_data)
 
 @bp.route('/api/stats')
+@login_required
 def api_stats():
     """获取统计数据的 API"""
     api = GameServerAPI()

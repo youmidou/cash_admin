@@ -1,8 +1,10 @@
 from flask import render_template, request, jsonify, flash, redirect, url_for
 from app.user import bp
 from app.api_client import GameServerAPI
+from app.auth import login_required
 
 @bp.route('/')
+@login_required
 def user_list():
     """用户列表页面"""
     page = request.args.get('page', 1, type=int)
@@ -17,6 +19,7 @@ def user_list():
                          search=search)
 
 @bp.route('/<int:user_id>')
+@login_required
 def user_detail(user_id):
     """用户详情页面"""
     api = GameServerAPI()

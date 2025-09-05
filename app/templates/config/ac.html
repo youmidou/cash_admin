@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}AC配置 - Cash Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="fas fa-robot me-2"></i>AC配置
+            </h1>
+            <a href="{{ url_for('config.config_list') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>返回配置
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <strong>警告：</strong>AC（人工控制）配置会影响游戏的公平性，请谨慎设置！
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">人工控制配置</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="ac_enabled" 
+                                       name="ac_enabled">
+                                <label class="form-check-label" for="ac_enabled">
+                                    启用人工控制
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ac_level" class="form-label">控制级别</label>
+                            <select class="form-select" id="ac_level" name="ac_level">
+                                <option value="low">低</option>
+                                <option value="normal" selected>正常</option>
+                                <option value="high">高</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="win_rate_min" class="form-label">最小胜率（%）</label>
+                            <input type="number" class="form-control" id="win_rate_min" 
+                                   name="win_rate_min" value="85" min="0" max="100">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="win_rate_max" class="form-label">最大胜率（%）</label>
+                            <input type="number" class="form-control" id="win_rate_max" 
+                                   name="win_rate_max" value="95" min="0" max="100">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="jackpot_enabled" 
+                                       name="jackpot_enabled" checked>
+                                <label class="form-check-label" for="jackpot_enabled">
+                                    启用奖池控制
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="jackpot_frequency" class="form-label">奖池触发频率</label>
+                            <input type="number" class="form-control" id="jackpot_frequency" 
+                                   name="jackpot_frequency" value="1000" min="100">
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-1"></i>保存配置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">配置说明</h5>
+            </div>
+            <div class="card-body">
+                <h6>人工控制</h6>
+                <p class="small text-muted">控制游戏结果的随机性，影响玩家体验</p>
+                
+                <h6>胜率控制</h6>
+                <p class="small text-muted">设置玩家获胜的概率范围</p>
+                
+                <h6>奖池控制</h6>
+                <p class="small text-muted">控制大奖的触发频率</p>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">当前状态</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>人工控制:</span>
+                    <span class="badge bg-danger">已禁用</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>胜率范围:</span>
+                    <span class="text-muted">85% - 95%</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>奖池控制:</span>
+                    <span class="badge bg-success">已启用</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
