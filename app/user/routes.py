@@ -200,6 +200,20 @@ def user_cheat(user_id):
     
     return render_template('user/cheat.html', user_info=user_info)
 
+@bp.route('/<int:user_id>/force-logout', methods=['POST'])
+@login_required
+def force_user_logout(user_id):
+    """强制用户退出"""
+    api = GameServerAPI()
+    result = api.force_user_logout(user_id)
+    
+    if result.get('error'):
+        flash(f'强制用户退出失败: {result["error"]}', 'error')
+    else:
+        flash(f'用户{user_id}已强制退出', 'success')
+    
+    return redirect(url_for('user.user_list'))
+
 @bp.route('/api/online-users')
 @login_required
 def api_online_users():

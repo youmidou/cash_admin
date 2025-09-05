@@ -134,6 +134,10 @@ class GameServerAPI:
         """设置用户为管理员"""
         return self._make_request('POST', f'/api/admin/user/{user_id}/set-admin', data={'is_admin': is_admin})
     
+    def force_user_logout(self, user_id):
+        """强制用户退出"""
+        return self._make_request('POST', f'/api/admin/user/{user_id}/force-logout')
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')
