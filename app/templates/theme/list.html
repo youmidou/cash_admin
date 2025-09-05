@@ -14,57 +14,85 @@
 <!-- 主题列表 -->
 <div class="card shadow">
     <div class="card-body">
-        {% if themes_data and themes_data.get('themes') %}
+        {% if themes_data and themes_data.get('data') %}
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-dark">
                         <tr>
                             <th>主题ID</th>
                             <th>名称</th>
-                            <th>描述</th>
+                            <th>类型</th>
+                            <th>基础投注</th>
+                            <th>累积奖池</th>
+                            <th>等级要求</th>
+                            <th>在线用户</th>
                             <th>状态</th>
-                            <th>RTP</th>
-                            <th>最小投注</th>
-                            <th>最大投注</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for theme in themes_data.themes %}
+                        {% for theme in themes_data.data %}
                         <tr>
-                            <td><strong>{{ theme.id }}</strong></td>
+                            <td><strong>{{ theme.theme_id }}</strong></td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    {% if theme.icon %}
-                                    <img src="{{ theme.icon }}" alt="{{ theme.name }}" 
-                                         class="me-2" style="width: 32px; height: 32px;">
-                                    {% endif %}
-                                    <span>{{ theme.name }}</span>
+                                    <span>{{ theme.theme_name }}</span>
                                 </div>
                             </td>
-                            <td>{{ theme.description or 'N/A' }}</td>
                             <td>
-                                {% if theme.active %}
+                                {% if theme.theme_type == 'normal' %}
+                                    <span class="badge bg-primary">普通</span>
+                                {% elif theme.theme_type == 'high' %}
+                                    <span class="badge bg-warning">高级</span>
+                                {% else %}
+                                    <span class="badge bg-info">{{ theme.theme_type }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if theme.base_bet %}
+                                    <span class="text-success">{{ "{:,}".format(theme.base_bet) }}</span>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if theme.jackpot %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-trophy"></i> 有奖池
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">无</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if theme.level and theme.level|int > 1 %}
+                                    <span class="badge bg-secondary">Lv.{{ theme.level }}</span>
+                                {% else %}
+                                    <span class="text-muted">无限制</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ theme.user_count }}</span>
+                            </td>
+                            <td>
+                                {% if theme.is_active %}
                                     <span class="badge bg-success">启用</span>
                                 {% else %}
                                     <span class="badge bg-secondary">禁用</span>
                                 {% endif %}
                             </td>
-                            <td>{{ theme.rtp or 'N/A' }}%</td>
-                            <td>{{ "{:,}".format(theme.min_bet) if theme.min_bet else 'N/A' }}</td>
-                            <td>{{ "{:,}".format(theme.max_bet) if theme.max_bet else 'N/A' }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ url_for('theme.theme_detail', theme_id=theme.id) }}" 
-                                       class="btn btn-outline-primary">
+                                    <a href="{{ url_for('theme.theme_detail', theme_id=theme.theme_id) }}" 
+                                       class="btn btn-outline-primary" title="查看详情">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ url_for('theme.theme_config', theme_id=theme.id) }}" 
-                                       class="btn btn-outline-warning">
+                                    <a href="{{ url_for('theme.theme_config', theme_id=theme.theme_id) }}" 
+                                       class="btn btn-outline-warning" title="配置">
                                         <i class="fas fa-cog"></i>
                                     </a>
-                                    <a href="{{ url_for('theme.theme_users', theme_id=theme.id) }}" 
-                                       class="btn btn-outline-info">
+                                    <a href="{{ url_for('theme.theme_users', theme_id=theme.theme_id) }}" 
+                                       class="btn btn-outline-info" title="用户统计">
                                         <i class="fas fa-users"></i>
                                     </a>
                                 </div>
@@ -80,6 +108,86 @@
                 <h5 class="text-muted">暂无主题数据</h5>
                 <p class="text-muted">请检查服务器连接或稍后重试</p>
             </div>
+        {% endif %}
+        
+        <!-- 分页控件 -->
+        {% if themes_data and themes_data.get('total_pages', 0) > 1 %}
+        <nav aria-label="主题分页">
+            <ul class="pagination justify-content-center mt-4">
+                <!-- 上一页 -->
+                {% if themes_data.get('has_prev') %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('theme.theme_list', page=themes_data.page-1, limit=themes_data.limit) }}">
+                        <i class="fas fa-chevron-left"></i> 上一页
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i> 上一页
+                    </span>
+                </li>
+                {% endif %}
+                
+                <!-- 页码 -->
+                {% set current_page = themes_data.get('page', 1) %}
+                {% set total_pages = themes_data.get('total_pages', 1) %}
+                {% set start_page = [1, current_page - 2]|max %}
+                {% set end_page = [total_pages, current_page + 2]|min %}
+                
+                {% if start_page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('theme.theme_list', page=1, limit=themes_data.limit) }}">1</a>
+                </li>
+                {% if start_page > 2 %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+                {% endif %}
+                
+                {% for page_num in range(start_page, end_page + 1) %}
+                <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('theme.theme_list', page=page_num, limit=themes_data.limit) }}">{{ page_num }}</a>
+                </li>
+                {% endfor %}
+                
+                {% if end_page < total_pages %}
+                {% if end_page < total_pages - 1 %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('theme.theme_list', page=total_pages, limit=themes_data.limit) }}">{{ total_pages }}</a>
+                </li>
+                {% endif %}
+                
+                <!-- 下一页 -->
+                {% if themes_data.get('has_next') %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('theme.theme_list', page=themes_data.page+1, limit=themes_data.limit) }}">
+                        下一页 <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        下一页 <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        
+        <!-- 分页信息 -->
+        <div class="text-center text-muted">
+            <small>
+                显示第 {{ (themes_data.page - 1) * themes_data.limit + 1 }} - 
+                {{ [themes_data.page * themes_data.limit, themes_data.total]|min }} 条，
+                共 {{ themes_data.total }} 条主题，第 {{ themes_data.page }} / {{ themes_data.total_pages }} 页
+            </small>
+        </div>
         {% endif %}
     </div>
 </div>

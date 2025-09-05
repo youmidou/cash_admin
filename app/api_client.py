@@ -74,6 +74,22 @@ class GameServerAPI:
         """获取系统信息"""
         return self._make_request('GET', '/api/admin/system')
     
+    def get_themes(self, page=1, limit=20):
+        """获取主题列表"""
+        return self._make_request('GET', f'/api/admin/themes?page={page}&limit={limit}')
+    
+    def get_theme_detail(self, theme_id):
+        """获取主题详情"""
+        return self._make_request('GET', f'/api/admin/theme/{theme_id}')
+    
+    def get_theme_config(self, theme_id):
+        """获取主题配置"""
+        return self._make_request('GET', f'/api/admin/theme/{theme_id}/config')
+    
+    def set_theme_config(self, theme_id, config_data):
+        """设置主题配置"""
+        return self._make_request('POST', f'/api/admin/theme/{theme_id}/config', data=config_data)
+    
     def get_user_info(self, user_id):
         """获取用户详细信息"""
         return self._make_request('GET', f'/api/admin/user/{user_id}')
@@ -106,6 +122,18 @@ class GameServerAPI:
         data = {'message': message}
         return self._make_request('POST', '/api/admin/broadcast', data)
     
+    def update_user(self, user_id, user_data):
+        """更新用户信息"""
+        return self._make_request('POST', f'/api/admin/user/{user_id}/update', data=user_data)
+    
+    def delete_user(self, user_id, confirm=True):
+        """删除用户账户"""
+        return self._make_request('POST', f'/api/admin/user/{user_id}/delete', data={'confirm': confirm})
+    
+    def set_user_admin(self, user_id, is_admin):
+        """设置用户为管理员"""
+        return self._make_request('POST', f'/api/admin/user/{user_id}/set-admin', data={'is_admin': is_admin})
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')
@@ -135,22 +163,7 @@ class GameServerAPI:
         # 这里可以实现奖励发送逻辑
         return {'error': 'Send prize not implemented'}
     
-    # 主题管理相关 API - 兼容性方法
-    def get_themes(self):
-        """获取所有主题列表 - 兼容性方法"""
-        return {'error': 'Themes API not implemented'}
-    
-    def get_theme(self, theme_id):
-        """获取特定主题信息 - 兼容性方法"""
-        return {'error': 'Theme API not implemented'}
-    
-    def get_theme_config(self, theme_id):
-        """获取主题配置 - 兼容性方法"""
-        return {'error': 'Theme config API not implemented'}
-    
-    def set_theme_config(self, theme_id, config):
-        """设置主题配置 - 兼容性方法"""
-        return {'error': 'Set theme config API not implemented'}
+    # 主题管理相关 API - 兼容性方法（已在上方实现）
     
     # 配置管理相关 API - 兼容性方法
     def get_daily_config(self):

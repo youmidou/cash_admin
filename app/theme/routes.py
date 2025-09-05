@@ -5,8 +5,22 @@ from app.api_client import GameServerAPI
 @bp.route('/')
 def theme_list():
     """主题列表页面"""
+    # 获取分页参数
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 20))
+    
     api = GameServerAPI()
-    themes_data = api.get_themes()
+    themes_data = api.get_themes(page=page, limit=limit)
+    
+    if themes_data.get('error'):
+        themes_data = {
+            'data': [], 
+            'total': 0, 
+            'page': page,
+            'limit': limit,
+            'total_pages': 0,
+            'error': themes_data['error']
+        }
     
     return render_template('theme/list.html', themes_data=themes_data)
 
@@ -14,7 +28,7 @@ def theme_list():
 def theme_detail(theme_id):
     """主题详情页面"""
     api = GameServerAPI()
-    theme_info = api.get_theme(theme_id)
+    theme_info = api.get_theme_detail(theme_id)
     
     if theme_info.get('error'):
         flash(f'获取主题信息失败: {theme_info["error"]}', 'error')
@@ -58,7 +72,7 @@ def theme_config(theme_id):
             return redirect(url_for('theme.theme_detail', theme_id=theme_id))
     
     # GET 请求，获取主题和配置信息
-    theme_info = api.get_theme(theme_id)
+    theme_info = api.get_theme_detail(theme_id)
     config_info = api.get_theme_config(theme_id)
     
     if theme_info.get('error'):
@@ -73,7 +87,7 @@ def theme_config(theme_id):
 def theme_users(theme_id):
     """主题用户统计页面"""
     api = GameServerAPI()
-    theme_info = api.get_theme(theme_id)
+    theme_info = api.get_theme_detail(theme_id)
     
     if theme_info.get('error'):
         flash(f'获取主题信息失败: {theme_info["error"]}', 'error')
