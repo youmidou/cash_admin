@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}编辑用户 - Cash Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="fas fa-edit me-2"></i>编辑用户
+            </h1>
+            <a href="{{ url_for('user.user_detail', user_id=user_info.id) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>返回详情
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">编辑用户信息</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="level" class="form-label">等级</label>
+                            <input type="number" class="form-control" id="level" name="level" 
+                                   value="{{ user_info.level }}" min="1" max="100">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vip_level" class="form-label">VIP等级</label>
+                            <input type="number" class="form-control" id="vip_level" name="vip_level" 
+                                   value="{{ user_info.vip_level }}" min="0" max="10">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="coins" class="form-label">金币</label>
+                            <input type="number" class="form-control" id="coins" name="coins" 
+                                   value="{{ user_info.coins }}" min="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="gems" class="form-label">宝石</label>
+                            <input type="number" class="form-control" id="gems" name="gems" 
+                                   value="{{ user_info.gems }}" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="exp" class="form-label">经验值</label>
+                            <input type="number" class="form-control" id="exp" name="exp" 
+                                   value="{{ user_info.exp }}" min="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="purchase_type" class="form-label">购买类型</label>
+                            <select class="form-select" id="purchase_type" name="purchase_type">
+                                <option value="0" {% if user_info.purchase_type == 0 %}selected{% endif %}>免费用户</option>
+                                <option value="1" {% if user_info.purchase_type == 1 %}selected{% endif %}>付费用户</option>
+                                <option value="2" {% if user_info.purchase_type == 2 %}selected{% endif %}>广告用户</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="notes" class="form-label">备注</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                      placeholder="添加备注信息..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>保存更改
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">当前信息</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>用户ID:</strong></td>
+                        <td>{{ user_info.id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>注册时间:</strong></td>
+                        <td>{{ user_info.register_time or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>最后登录:</strong></td>
+                        <td>{{ user_info.last_login or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>平台:</strong></td>
+                        <td>{{ user_info.platform_type or 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">快速操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('user.send_prize', user_id=user_info.id) }}" 
+                       class="btn btn-success btn-sm">
+                        <i class="fas fa-gift me-1"></i>发送奖励
+                    </a>
+                    <a href="{{ url_for('user.user_cheat', user_id=user_info.id) }}" 
+                       class="btn btn-warning btn-sm">
+                        <i class="fas fa-magic me-1"></i>作弊功能
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

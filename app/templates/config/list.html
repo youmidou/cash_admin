@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}配置管理 - Cash Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-cogs me-2"></i>配置管理
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 每日配置 -->
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-day fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">每日配置</h5>
+                <p class="card-text">管理每日奖励、转盘、广告奖励等配置</p>
+                <a href="{{ url_for('config.daily_config') }}" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i>编辑配置
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 活动配置 -->
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
+                <h5 class="card-title">活动配置</h5>
+                <p class="card-text">管理游戏活动、锦标赛、特殊优惠等配置</p>
+                <a href="{{ url_for('config.activity_config') }}" class="btn btn-success">
+                    <i class="fas fa-edit me-1"></i>编辑配置
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- AC配置 -->
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-robot fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">AC配置</h5>
+                <p class="card-text">管理人工控制、胜率、奖池等配置</p>
+                <a href="{{ url_for('config.ac_config') }}" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i>编辑配置
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系统配置 -->
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-server fa-3x text-info mb-3"></i>
+                <h5 class="card-title">系统配置</h5>
+                <p class="card-text">查看系统信息、服务器状态等</p>
+                <a href="{{ url_for('config.system_config') }}" class="btn btn-info">
+                    <i class="fas fa-eye me-1"></i>查看信息
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主题配置 -->
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-palette fa-3x text-danger mb-3"></i>
+                <h5 class="card-title">主题配置</h5>
+                <p class="card-text">管理游戏主题的配置和参数</p>
+                <a href="{{ url_for('theme.theme_list') }}" class="btn btn-danger">
+                    <i class="fas fa-edit me-1"></i>管理主题
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户配置 -->
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-secondary mb-3"></i>
+                <h5 class="card-title">用户配置</h5>
+                <p class="card-text">管理用户相关配置和权限</p>
+                <a href="{{ url_for('user.user_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-edit me-1"></i>管理用户
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 配置状态概览 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>配置状态概览</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h6>每日奖励</h6>
+                            <span class="badge bg-success">已启用</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h6>活动系统</h6>
+                            <span class="badge bg-success">已启用</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                            <h6>AC控制</h6>
+                            <span class="badge bg-danger">已禁用</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h6>系统状态</h6>
+                            <span class="badge bg-success">正常</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

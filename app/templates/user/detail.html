@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}用户详情 - Cash Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="fas fa-user me-2"></i>用户详情
+            </h1>
+            <div>
+                <a href="{{ url_for('user.user_edit', user_id=user_info.id) }}" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i>编辑
+                </a>
+                <a href="{{ url_for('user.user_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回列表
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 基本信息 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>基本信息</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>用户ID:</strong></td>
+                        <td>{{ user_info.id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>等级:</strong></td>
+                        <td><span class="badge bg-primary fs-6">{{ user_info.level }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>VIP等级:</strong></td>
+                        <td><span class="badge bg-warning fs-6">{{ user_info.vip_level }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>金币:</strong></td>
+                        <td><span class="text-success fw-bold">{{ "{:,}".format(user_info.coins) }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>宝石:</strong></td>
+                        <td><span class="text-info fw-bold">{{ "{:,}".format(user_info.gems) }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>经验值:</strong></td>
+                        <td>{{ "{:,}".format(user_info.exp) }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏信息 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-gamepad me-2"></i>游戏信息</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>当前主题:</strong></td>
+                        <td>{{ user_info.current_theme or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>总旋转次数:</strong></td>
+                        <td>{{ "{:,}".format(user_info.total_spins) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>总获胜次数:</strong></td>
+                        <td>{{ "{:,}".format(user_info.total_wins) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>最大获胜:</strong></td>
+                        <td><span class="text-success fw-bold">{{ "{:,}".format(user_info.max_win) }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>平台类型:</strong></td>
+                        <td>{{ user_info.platform_type or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>设备型号:</strong></td>
+                        <td>{{ user_info.device_model or 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 时间信息 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>时间信息</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>注册时间:</strong></td>
+                        <td>{{ user_info.register_time or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>最后登录:</strong></td>
+                        <td>{{ user_info.last_login or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>最后活跃:</strong></td>
+                        <td>{{ user_info.last_active or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>在线状态:</strong></td>
+                        <td>
+                            {% if user_info.is_online %}
+                                <span class="badge bg-success">在线</span>
+                            {% else %}
+                                <span class="badge bg-secondary">离线</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统计信息 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>统计信息</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>总游戏时间:</strong></td>
+                        <td>{{ user_info.total_play_time or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>平均会话时长:</strong></td>
+                        <td>{{ user_info.avg_session_time or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>购买类型:</strong></td>
+                        <td>
+                            {% if user_info.purchase_type == 0 %}
+                                <span class="badge bg-info">免费用户</span>
+                            {% elif user_info.purchase_type == 1 %}
+                                <span class="badge bg-success">付费用户</span>
+                            {% elif user_info.purchase_type == 2 %}
+                                <span class="badge bg-warning">广告用户</span>
+                            {% else %}
+                                <span class="badge bg-secondary">未知</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>总消费:</strong></td>
+                        <td><span class="text-danger fw-bold">${{ user_info.total_spent or 0 }}</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 操作按钮 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tools me-2"></i>管理操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('user.send_prize', user_id=user_info.id) }}" 
+                           class="btn btn-success w-100">
+                            <i class="fas fa-gift me-1"></i>发送奖励
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('user.user_cheat', user_id=user_info.id) }}" 
+                           class="btn btn-warning w-100">
+                            <i class="fas fa-magic me-1"></i>作弊功能
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-info w-100" onclick="viewUserLogs({{ user_info.id }})">
+                            <i class="fas fa-list me-1"></i>查看日志
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-danger w-100" onclick="deleteUser({{ user_info.id }})">
+                            <i class="fas fa-trash me-1"></i>删除账户
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认删除用户</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>警告：</strong>此操作将永久删除用户账户及其所有数据，无法恢复！
+                </div>
+                <p>确定要删除用户 <strong>{{ user_info.id }}</strong> 吗？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">确认删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteUser(userId) {
+    $('#deleteModal').modal('show');
+}
+
+$('#confirmDelete').click(function() {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/user/${userId}/delete`;
+    document.body.appendChild(form);
+    form.submit();
+});
+
+function viewUserLogs(userId) {
+    // 这里可以添加查看用户日志的功能
+    alert('查看用户日志功能待实现');
+}
+</script>
+{% endblock %}

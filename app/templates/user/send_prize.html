@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}发送奖励 - Cash Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="fas fa-gift me-2"></i>发送奖励
+            </h1>
+            <a href="{{ url_for('user.user_detail', user_id=user_info.id) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>返回详情
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">发送奖励给用户 {{ user_info.id }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="prize_type" class="form-label">奖励类型</label>
+                            <select class="form-select" id="prize_type" name="prize_type" required>
+                                <option value="">选择奖励类型</option>
+                                <option value="coins">金币</option>
+                                <option value="gems">宝石</option>
+                                <option value="booster">加速器</option>
+                                <option value="coupon">优惠券</option>
+                                <option value="special">特殊奖励</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">数量</label>
+                            <input type="number" class="form-control" id="amount" name="amount" 
+                                   min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="message" class="form-label">消息</label>
+                        <textarea class="form-control" id="message" name="message" rows="3" 
+                                  placeholder="给用户的消息..."></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-1"></i>发送奖励
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">用户信息</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>用户ID:</strong></td>
+                        <td>{{ user_info.id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>等级:</strong></td>
+                        <td>{{ user_info.level }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>金币:</strong></td>
+                        <td>{{ "{:,}".format(user_info.coins) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>宝石:</strong></td>
+                        <td>{{ "{:,}".format(user_info.gems) }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

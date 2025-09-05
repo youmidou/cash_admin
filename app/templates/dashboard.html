@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}仪表板 - Cash Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-tachometer-alt me-2"></i>仪表板
+        </h1>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            总用户数
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-users">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            在线用户
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="online-users">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            服务器状态
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="server-status">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-server fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            主题数量
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="theme-count">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-palette fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 内容区域 -->
+<div class="row">
+    <!-- 最近用户 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">最近用户</h6>
+                <a href="{{ url_for('user.user_list') }}" class="btn btn-sm btn-primary">查看全部</a>
+            </div>
+            <div class="card-body">
+                {% if users_data and users_data.get('users') %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>用户ID</th>
+                                    <th>等级</th>
+                                    <th>VIP</th>
+                                    <th>金币</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users_data.users[:5] %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td>{{ user.level }}</td>
+                                    <td>{{ user.vip_level }}</td>
+                                    <td>{{ "{:,}".format(user.coins) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">暂无用户数据</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 主题列表 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">主题列表</h6>
+                <a href="{{ url_for('theme.theme_list') }}" class="btn btn-sm btn-primary">查看全部</a>
+            </div>
+            <div class="card-body">
+                {% if themes_data and themes_data.get('themes') %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>主题ID</th>
+                                    <th>名称</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for theme in themes_data.themes[:5] %}
+                                <tr>
+                                    <td>{{ theme.id }}</td>
+                                    <td>{{ theme.name }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if theme.active else 'secondary' }}">
+                                            {{ '启用' if theme.active else '禁用' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">暂无主题数据</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 系统信息 -->
+{% if system_info and system_info.get('error') is none %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">系统信息</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>服务器版本:</strong> {{ system_info.get('version', 'N/A') }}</p>
+                        <p><strong>运行时间:</strong> {{ system_info.get('uptime', 'N/A') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>内存使用:</strong> {{ system_info.get('memory_usage', 'N/A') }}</p>
+                        <p><strong>CPU使用:</strong> {{ system_info.get('cpu_usage', 'N/A') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // 加载统计数据
+    loadStats();
+    
+    // 每30秒刷新一次统计数据
+    setInterval(loadStats, 30000);
+});
+
+function loadStats() {
+    $.get('{{ url_for("main.api_stats") }}')
+        .done(function(data) {
+            if (data.error) {
+                console.error('加载统计数据失败:', data.error);
+                return;
+            }
+            
+            $('#total-users').text(data.total_users.toLocaleString());
+            $('#online-users').text(data.online_users.toLocaleString());
+            
+            // 服务器状态
+            const statusElement = $('#server-status');
+            if (data.server_status === 'online') {
+                statusElement.html('<span class="text-success"><i class="fas fa-check-circle me-1"></i>在线</span>');
+            } else {
+                statusElement.html('<span class="text-danger"><i class="fas fa-times-circle me-1"></i>离线</span>');
+            }
+            
+            // 主题数量
+            if (data.system_info && data.system_info.themes) {
+                $('#theme-count').text(data.system_info.themes.length);
+            }
+        })
+        .fail(function() {
+            console.error('无法连接到服务器');
+            $('#server-status').html('<span class="text-danger"><i class="fas fa-times-circle me-1"></i>连接失败</span>');
+        });
+}
+</script>
+{% endblock %}
