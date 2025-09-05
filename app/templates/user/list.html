@@ -11,6 +11,42 @@
     </div>
 </div>
 
+<!-- 用户统计信息 -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>{{ online_count or 0 }}</h4>
+                <p class="mb-0">在线用户</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>{{ users_data.total if users_data else 0 }}</h4>
+                <p class="mb-0">总用户数</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>{{ (users_data.users | selectattr('is_online') | list | length) if users_data and users_data.users else 0 }}</h4>
+                <p class="mb-0">当前在线</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>{{ (users_data.users | rejectattr('is_online') | list | length) if users_data and users_data.users else 0 }}</h4>
+                <p class="mb-0">离线用户</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 搜索和操作栏 -->
 <div class="row mb-4">
     <div class="col-md-6">
@@ -29,6 +65,14 @@
     </div>
 </div>
 
+<!-- 连接状态提示 -->
+{% if users_data.get('error') %}
+<div class="alert alert-warning" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    {{ users_data.error }}
+</div>
+{% endif %}
+
 <!-- 用户列表 -->
 <div class="card shadow">
     <div class="card-body">
@@ -42,7 +86,8 @@
                             <th>VIP等级</th>
                             <th>金币</th>
                             <th>宝石</th>
-                            <th>注册时间</th>
+                            <th>状态</th>
+                            <th>平台</th>
                             <th>最后登录</th>
                             <th>操作</th>
                         </tr>
@@ -59,7 +104,20 @@
                             </td>
                             <td>{{ "{:,}".format(user.coins) }}</td>
                             <td>{{ "{:,}".format(user.gems) }}</td>
-                            <td>{{ user.register_time or 'N/A' }}</td>
+                            <td>
+                                {% if user.is_online %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-circle me-1"></i>在线
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-circle me-1"></i>离线
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ user.platform_type or 'N/A' }}</span>
+                            </td>
                             <td>{{ user.last_login or 'N/A' }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
@@ -169,5 +227,39 @@ $('#confirmDelete').click(function() {
 function refreshUsers() {
     location.reload();
 }
+
+// 实时更新在线用户数据
+function updateOnlineUsers() {
+    $.get('/user/api/online-users')
+        .done(function(data) {
+            if (data.error) {
+                console.error('获取在线用户数据失败:', data.error);
+                return;
+            }
+            
+            // 更新在线用户数量
+            $('.card.bg-primary h4').text(data.online_count);
+            
+            // 更新当前在线数量
+            const onlineInList = $('.badge.bg-success').length;
+            $('.card.bg-info h4').text(onlineInList);
+            
+            // 更新离线用户数量
+            const offlineInList = $('.badge.bg-secondary').length;
+            $('.card.bg-warning h4').text(offlineInList);
+        })
+        .fail(function() {
+            console.error('无法连接到服务器');
+        });
+}
+
+// 页面加载完成后开始定时更新
+$(document).ready(function() {
+    // 每30秒更新一次在线用户数据
+    setInterval(updateOnlineUsers, 30000);
+    
+    // 页面加载时立即更新一次
+    updateOnlineUsers();
+});
 </script>
 {% endblock %}
