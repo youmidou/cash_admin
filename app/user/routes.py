@@ -112,12 +112,13 @@ def user_list():
 def user_detail(user_id):
     """用户详情页面"""
     api = GameServerAPI()
-    user_info = api.get_user_info(user_id)
+    result = api.get_user_info(user_id)
     
-    if user_info.get('error'):
-        flash(f'获取用户信息失败: {user_info["error"]}', 'error')
+    if result.get('error'):
+        flash(f'获取用户信息失败: {result["error"]}', 'error')
         return redirect(url_for('user.user_list'))
     
+    user_info = result.get('data', {})
     return render_template('user/detail.html', user_info=user_info)
 
 @bp.route('/<int:user_id>/edit', methods=['GET', 'POST'])

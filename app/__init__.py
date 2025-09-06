@@ -36,4 +36,7 @@ def create_app(config_name='default'):
     from app.jackpot import bp as jackpot_bp
     app.register_blueprint(jackpot_bp, url_prefix='/jackpot')
     
+    from app.report import bp as report_bp
+    app.register_blueprint(report_bp, url_prefix='/report')
+    
     return app

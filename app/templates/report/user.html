@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}用户报表{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-users me-2"></i>用户报表
+                </h1>
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="dateRangeSelect" onchange="changeDateRange()">
+                        <option value="today" {% if date_range == 'today' %}selected{% endif %}>今天</option>
+                        <option value="week" {% if date_range == 'week' %}selected{% endif %}>本周</option>
+                        <option value="month" {% if date_range == 'month' %}selected{% endif %}>本月</option>
+                        <option value="quarter" {% if date_range == 'quarter' %}selected{% endif %}>本季度</option>
+                        <option value="year" {% if date_range == 'year' %}selected{% endif %}>本年</option>
+                    </select>
+                    <a href="{{ url_for('report.report_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回报表管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户统计指标 -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">总用户数</h5>
+                    <h2 class="text-primary">{{ "{:,}".format(report_data.user_statistics.total_users) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-success">新用户</h5>
+                    <h2 class="text-success">{{ "{:,}".format(report_data.user_statistics.new_users) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-info">活跃用户</h5>
+                    <h2 class="text-info">{{ "{:,}".format(report_data.user_statistics.active_users) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">留存率</h5>
+                    <h2 class="text-warning">{{ "%.1f".format(report_data.user_statistics.retention_rate * 100) }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">平均等级</h5>
+                    <h2 class="text-danger">{{ report_data.user_statistics.average_level }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">平均VIP等级</h5>
+                    <h2 class="text-secondary">{{ report_data.user_statistics.average_vip_level }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户分群和活跃度 -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users-cog me-2"></i>用户分群
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userSegmentsChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>用户活跃度
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userActivityChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 高价值用户排行 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-crown me-2"></i>高价值用户排行
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>用户ID</th>
+                                    <th>用户名</th>
+                                    <th>等级</th>
+                                    <th>VIP等级</th>
+                                    <th>总消费</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in report_data.top_users %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-{% if loop.index == 1 %}warning{% elif loop.index == 2 %}secondary{% elif loop.index == 3 %}success{% else %}primary{% endif %}">
+                                            {{ loop.index }}
+                                        </span>
+                                    </td>
+                                    <td>{{ user.user_id }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>
+                                        <span class="badge bg-info">Lv.{{ user.level }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">VIP {{ user.vip_level }}</span>
+                                    </td>
+                                    <td>{{ "{:,}".format(user.total_spent) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('user.user_detail', user_id=user.user_id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> 查看详情
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户分群详情 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>用户分群详情
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-primary">新用户</h6>
+                                <h4 class="text-primary">{{ "{:,}".format(report_data.user_segments.new_users) }}</h4>
+                                <small class="text-muted">注册时间 < 7天</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-success">普通用户</h6>
+                                <h4 class="text-success">{{ "{:,}".format(report_data.user_segments.regular_users) }}</h4>
+                                <small class="text-muted">活跃但未付费</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-warning">VIP用户</h6>
+                                <h4 class="text-warning">{{ "{:,}".format(report_data.user_segments.vip_users) }}</h4>
+                                <small class="text-muted">VIP等级 > 0</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-secondary">非活跃用户</h6>
+                                <h4 class="text-secondary">{{ "{:,}".format(report_data.user_segments.inactive_users) }}</h4>
+                                <small class="text-muted">7天未登录</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报表信息 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary" onclick="refreshReport()">
+                            <i class="fas fa-sync me-1"></i>刷新数据
+                        </button>
+                        <button class="btn btn-success" onclick="exportReport()">
+                            <i class="fas fa-download me-1"></i>导出报表
+                        </button>
+                        <button class="btn btn-info" onclick="printReport()">
+                            <i class="fas fa-print me-1"></i>打印报表
+                        </button>
+                    </div>
+                    <hr>
+                    <small class="text-muted">
+                        报表生成时间：{{ report_data.generated_time }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// 用户分群饼图
+const userSegmentsCtx = document.getElementById('userSegmentsChart').getContext('2d');
+new Chart(userSegmentsCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['新用户', '普通用户', 'VIP用户', '非活跃用户'],
+        datasets: [{
+            data: [
+                {{ report_data.user_segments.new_users }},
+                {{ report_data.user_segments.regular_users }},
+                {{ report_data.user_segments.vip_users }},
+                {{ report_data.user_segments.inactive_users }}
+            ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// 用户活跃度柱状图
+const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+new Chart(userActivityCtx, {
+    type: 'bar',
+    data: {
+        labels: ['日活跃', '周活跃', '月活跃'],
+        datasets: [{
+            label: '活跃用户数',
+            data: [
+                {{ report_data.user_activity.daily_active }},
+                {{ report_data.user_activity.weekly_active }},
+                {{ report_data.user_activity.monthly_active }}
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function changeDateRange() {
+    const dateRange = document.getElementById('dateRangeSelect').value;
+    window.location.href = `{{ url_for('report.user_report') }}?date_range=${dateRange}`;
+}
+
+function refreshReport() {
+    window.location.reload();
+}
+
+function exportReport() {
+    alert('导出功能即将推出');
+}
+
+function printReport() {
+    window.print();
+}
+</script>
+{% endblock %}

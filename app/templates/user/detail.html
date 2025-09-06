@@ -44,15 +44,15 @@
                     </tr>
                     <tr>
                         <td><strong>金币:</strong></td>
-                        <td><span class="text-success fw-bold">{{ "{:,}".format(user_info.coins) }}</span></td>
+                        <td><span class="text-success fw-bold">{{ "{:,}".format(user_info.coins or 0) }}</span></td>
                     </tr>
                     <tr>
                         <td><strong>宝石:</strong></td>
-                        <td><span class="text-info fw-bold">{{ "{:,}".format(user_info.gems) }}</span></td>
+                        <td><span class="text-info fw-bold">{{ "{:,}".format(user_info.gems or 0) }}</span></td>
                     </tr>
                     <tr>
                         <td><strong>经验值:</strong></td>
-                        <td>{{ "{:,}".format(user_info.exp) }}</td>
+                        <td>{{ "{:,}".format(user_info.exp or 0) }}</td>
                     </tr>
                 </table>
             </div>
@@ -73,15 +73,15 @@
                     </tr>
                     <tr>
                         <td><strong>总旋转次数:</strong></td>
-                        <td>{{ "{:,}".format(user_info.total_spins) }}</td>
+                        <td>{{ "{:,}".format(user_info.total_spins or 0) }}</td>
                     </tr>
                     <tr>
                         <td><strong>总获胜次数:</strong></td>
-                        <td>{{ "{:,}".format(user_info.total_wins) }}</td>
+                        <td>{{ "{:,}".format(user_info.total_wins or 0) }}</td>
                     </tr>
                     <tr>
                         <td><strong>最大获胜:</strong></td>
-                        <td><span class="text-success fw-bold">{{ "{:,}".format(user_info.max_win) }}</span></td>
+                        <td><span class="text-success fw-bold">{{ "{:,}".format(user_info.max_win or 0) }}</span></td>
                     </tr>
                     <tr>
                         <td><strong>平台类型:</strong></td>

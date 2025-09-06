@@ -70,6 +70,10 @@ class GameServerAPI:
         """获取在线用户列表"""
         return self._make_request('GET', f'/api/admin/online-users?page={page}&limit={limit}')
     
+    def get_user_info(self, user_id):
+        """获取用户详细信息"""
+        return self._make_request('GET', f'/api/admin/user/{user_id}')
+    
     def get_system_info(self):
         """获取系统信息"""
         return self._make_request('GET', '/api/admin/system')
@@ -277,6 +281,44 @@ class GameServerAPI:
             'date_range': date_range
         }
         return self._make_request('POST', '/api/admin/jackpot/calculate-store', data=data)
+    
+    # ==================== 报表管理 ====================
+    
+    def get_report_data(self, report_type='overview', date_range='today', theme_id=None, user_id=None, format_type='json'):
+        """获取报表数据"""
+        params = {
+            'type': report_type,
+            'date_range': date_range,
+            'format': format_type
+        }
+        if theme_id:
+            params['theme_id'] = theme_id
+        if user_id:
+            params['user_id'] = user_id
+        
+        return self._make_request('GET', '/api/admin/report', params=params)
+    
+    # ==================== 配置管理 ====================
+    
+    def get_daily_config(self):
+        """获取每日配置"""
+        return self._make_request('GET', '/api/admin/config/daily')
+    
+    def set_daily_config(self, config_data):
+        """设置每日配置"""
+        return self._make_request('POST', '/api/admin/config/daily', data=config_data)
+    
+    def get_update_config(self):
+        """获取更新配置"""
+        return self._make_request('GET', '/api/admin/config/update')
+    
+    def get_update_default_config(self):
+        """获取更新默认配置"""
+        return self._make_request('GET', '/api/admin/config/update/default')
+    
+    def set_update_config(self, config_data):
+        """设置更新配置"""
+        return self._make_request('POST', '/api/admin/config/update', data=config_data)
     
     def health_check(self):
         """健康检查"""
