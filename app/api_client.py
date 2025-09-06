@@ -382,24 +382,6 @@ class GameServerAPI:
         """获取邮票默认配置"""
         return self._make_request('GET', '/api/admin/stamps/config/default')
     
-    # ==================== 属性管理 ====================
-    
-    def get_property_value(self, uid, key):
-        """获取属性值"""
-        return self._make_request('GET', f'/api/admin/property/value?uid={uid}&key={key}')
-    
-    def set_property_value(self, uid, key, value):
-        """设置属性值"""
-        data = {
-            'uid': uid,
-            'key': key,
-            'value': value
-        }
-        return self._make_request('POST', '/api/admin/property/value', data=data)
-    
-    def get_property_default(self):
-        """获取属性默认值"""
-        return self._make_request('GET', '/api/admin/property/default')
     
     # ==================== 任务管理 ====================
     

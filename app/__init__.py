@@ -45,9 +45,6 @@ def create_app(config_name='default'):
     from app.stamps import bp as stamps_bp
     app.register_blueprint(stamps_bp, url_prefix='/stamps')
 
-    from app.property import bp as property_bp
-    app.register_blueprint(property_bp, url_prefix='/property')
-
     from app.quest import bp as quest_bp
     app.register_blueprint(quest_bp, url_prefix='/quest')
     
