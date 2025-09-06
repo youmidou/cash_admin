@@ -115,3 +115,4 @@ def activity_report():
     except Exception as e:
         flash(f'获取活动报表失败: {str(e)}', 'error')
         return redirect(url_for('report.report_management'))
+

@@ -113,3 +113,4 @@ def send_inbox_gift():
             flash(f'收件箱礼物发送失败: {str(e)}', 'error')
     
     return render_template('reward/send_inbox_gift.html')
+

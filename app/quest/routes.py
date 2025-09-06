@@ -141,3 +141,4 @@ def quest_default():
     except Exception as e:
         flash(f'获取任务默认配置失败: {str(e)}', 'error')
         return redirect(url_for('quest.quest_management'))
+

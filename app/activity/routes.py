@@ -269,3 +269,4 @@ def ac_default_config():
     except Exception as e:
         flash(f'获取AC默认配置失败: {str(e)}', 'error')
         return redirect(url_for('activity.ac_management'))
+

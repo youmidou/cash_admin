@@ -77,3 +77,4 @@ def calculate_store_data():
             flash(f'计算商店数据失败: {str(e)}', 'error')
     
     return render_template('jackpot/calculate_store.html')
+

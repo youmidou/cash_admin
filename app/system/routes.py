@@ -102,3 +102,4 @@ def api_system_info():
         return jsonify(system_info)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
