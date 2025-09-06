@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}奖池信息 - 主题 {{ theme_id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-trophy me-2"></i>奖池信息 - 主题 {{ theme_id }}
+                </h1>
+                <a href="{{ url_for('jackpot.jackpot_management') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回奖池管理
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- 奖池等级信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-layer-group me-2"></i>奖池等级
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for level in jackpot.jackpot_levels %}
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card border-{% if level.level == 1 %}success{% elif level.level == 2 %}info{% elif level.level == 3 %}warning{% else %}danger{% endif %}">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-{% if level.level == 1 %}success{% elif level.level == 2 %}info{% elif level.level == 3 %}warning{% else %}danger{% endif %}">
+                                        {{ level.name }}
+                                    </h6>
+                                    <h4 class="text-{% if level.level == 1 %}success{% elif level.level == 2 %}info{% elif level.level == 3 %}warning{% else %}danger{% endif %}">
+                                        {{ "{:,}".format(level.amount) }}
+                                    </h4>
+                                    <small class="text-muted">等级 {{ level.level }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 奖池统计信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>奖池统计
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">总贡献度</label>
+                                <div class="h4 text-primary">{{ "{:,}".format(jackpot.total_contribution) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">奖池状态</label>
+                                <div>
+                                    {% if jackpot.active %}
+                                        <span class="badge bg-success">活跃</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">非活跃</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最后中奖信息 -->
+            {% if jackpot.last_winner %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-crown me-2"></i>最后中奖信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">中奖用户</label>
+                                <div class="h6">{{ jackpot.last_winner.username }} (ID: {{ jackpot.last_winner.user_id }})</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">中奖金额</label>
+                                <div class="h5 text-success">{{ "{:,}".format(jackpot.last_winner.amount) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">中奖时间</label>
+                                <div class="h6">{{ jackpot.last_win_time }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <!-- 奖池概览 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>奖池概览
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">主题ID</label>
+                        <div class="h6">{{ jackpot.theme_id }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">奖池等级数</label>
+                        <div class="h6">{{ jackpot.jackpot_levels|length }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">最高奖池</label>
+                        <div class="h5 text-danger">
+                            {{ "{:,}".format(jackpot.jackpot_levels[-1].amount if jackpot.jackpot_levels else 0) }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">最低奖池</label>
+                        <div class="h6 text-success">
+                            {{ "{:,}".format(jackpot.jackpot_levels[0].amount if jackpot.jackpot_levels else 0) }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">更新时间</label>
+                        <div class="small text-muted">{{ jackpot.update_time }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i>操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('jackpot.jackpot_info', theme_id=theme_id) }}" class="btn btn-primary">
+                            <i class="fas fa-sync me-1"></i>刷新数据
+                        </a>
+                        <a href="{{ url_for('jackpot.all_jackpot_info') }}" class="btn btn-info">
+                            <i class="fas fa-list me-1"></i>查看所有奖池
+                        </a>
+                        <a href="{{ url_for('jackpot.calculate_store_data') }}" class="btn btn-success">
+                            <i class="fas fa-calculator me-1"></i>计算商店数据
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}商店数据计算结果{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-chart-line me-2"></i>商店数据计算结果
+                </h1>
+                <a href="{{ url_for('jackpot.calculate_store_data') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>重新计算
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 计算信息 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>计算信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">主题ID</label>
+                                <div class="h6">{{ theme_id or '所有主题' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">计算类型</label>
+                                <div class="h6">{{ calculation_type }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">时间范围</label>
+                                <div class="h6">{{ date_range }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">计算时间</label>
+                                <div class="h6">{{ store_data.calculation_time }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 营收数据 -->
+    {% if calculation_type == 'all' or calculation_type == 'revenue' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-coins me-2"></i>营收数据
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">总收入</h6>
+                                <h3 class="text-success">{{ "{:,}".format(store_data.revenue.total) }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">日收入</h6>
+                                <h4 class="text-primary">{{ "{:,}".format(store_data.revenue.daily) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">周收入</h6>
+                                <h4 class="text-info">{{ "{:,}".format(store_data.revenue.weekly) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">月收入</h6>
+                                <h4 class="text-warning">{{ "{:,}".format(store_data.revenue.monthly) }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 利润数据 -->
+    {% if calculation_type == 'all' or calculation_type == 'profit' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>利润数据
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">总利润</h6>
+                                <h3 class="text-success">{{ "{:,}".format(store_data.profit.total) }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">日利润</h6>
+                                <h4 class="text-primary">{{ "{:,}".format(store_data.profit.daily) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">周利润</h6>
+                                <h4 class="text-info">{{ "{:,}".format(store_data.profit.weekly) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">月利润</h6>
+                                <h4 class="text-warning">{{ "{:,}".format(store_data.profit.monthly) }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <h6 class="text-muted">利润率</h6>
+                                <h4 class="text-success">{{ "%.1f".format((store_data.profit.total / store_data.revenue.total * 100) if store_data.revenue.total > 0 else 0) }}%</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <h6 class="text-muted">成本</h6>
+                                <h4 class="text-danger">{{ "{:,}".format(store_data.revenue.total - store_data.profit.total) }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 库存数据 -->
+    {% if calculation_type == 'all' or calculation_type == 'inventory' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-boxes me-2"></i>库存数据
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">总商品数</h6>
+                                <h3 class="text-primary">{{ store_data.inventory.total_items }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">已售商品</h6>
+                                <h4 class="text-success">{{ store_data.inventory.sold_items }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">可用商品</h6>
+                                <h4 class="text-info">{{ store_data.inventory.available_items }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">销售率</h6>
+                                <h4 class="text-warning">{{ "%.1f".format((store_data.inventory.sold_items / store_data.inventory.total_items * 100) if store_data.inventory.total_items > 0 else 0) }}%</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted">热门商品</h6>
+                            <div class="d-flex flex-wrap">
+                                {% for item in store_data.inventory.popular_items %}
+                                <span class="badge bg-primary me-2 mb-2">{{ item }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 统计数据 -->
+    {% if calculation_type == 'all' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>统计数据
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">总交易数</h6>
+                                <h3 class="text-primary">{{ "{:,}".format(store_data.statistics.total_transactions) }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">平均交易额</h6>
+                                <h4 class="text-success">{{ "{:,}".format(store_data.statistics.average_transaction) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">转化率</h6>
+                                <h4 class="text-info">{{ "%.1f".format(store_data.statistics.conversion_rate * 100) }}%</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">客户满意度</h6>
+                                <h4 class="text-warning">{{ store_data.statistics.customer_satisfaction }}/5.0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 操作按钮 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('jackpot.calculate_store_data') }}" class="btn btn-primary">
+                            <i class="fas fa-calculator me-1"></i>重新计算
+                        </a>
+                        <a href="{{ url_for('jackpot.jackpot_management') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>返回奖池管理
+                        </a>
+                        <button class="btn btn-success" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i>打印报告
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

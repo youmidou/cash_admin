@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}奖池管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-trophy me-2"></i>奖池管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能卡片 -->
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-info-circle fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">获取奖池信息</h5>
+                    <p class="card-text text-muted">查看指定主题的详细奖池信息，包括各级奖池金额、贡献度等</p>
+                    <form method="GET" action="{{ url_for('jackpot.jackpot_info', theme_id=0) }}" class="d-inline">
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" name="theme_id" placeholder="输入主题ID" required>
+                            <button class="btn btn-info" type="submit">
+                                <i class="fas fa-search me-1"></i>查询
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-list fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">获取所有奖池信息</h5>
+                    <p class="card-text text-muted">查看所有主题的奖池信息概览，包括总贡献度和活跃状态</p>
+                    <a href="{{ url_for('jackpot.all_jackpot_info') }}" class="btn btn-primary">
+                        <i class="fas fa-list me-1"></i>查看所有奖池
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-calculator fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">计算商店数据</h5>
+                    <p class="card-text text-muted">计算商店的营收、利润、库存等数据，支持不同时间范围</p>
+                    <a href="{{ url_for('jackpot.calculate_store_data') }}" class="btn btn-success">
+                        <i class="fas fa-calculator me-1"></i>计算商店数据
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速查询 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>快速查询
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('jackpot.jackpot_info', theme_id=10001) }}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-trophy me-1"></i>主题 10001
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('jackpot.jackpot_info', theme_id=10050) }}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-trophy me-1"></i>主题 10050
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('jackpot.jackpot_info', theme_id=10051) }}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-trophy me-1"></i>主题 10051
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('jackpot.jackpot_info', theme_id=10052) }}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-trophy me-1"></i>主题 10052
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能说明 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>功能说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-info-circle me-2"></i>获取奖池信息</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>查看各级奖池金额</li>
+                                <li><i class="fas fa-check text-success me-2"></i>显示总贡献度</li>
+                                <li><i class="fas fa-check text-success me-2"></i>查看最后中奖信息</li>
+                                <li><i class="fas fa-check text-success me-2"></i>显示奖池活跃状态</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-list me-2"></i>获取所有奖池信息</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>所有主题奖池概览</li>
+                                <li><i class="fas fa-check text-success me-2"></i>总贡献度统计</li>
+                                <li><i class="fas fa-check text-success me-2"></i>玩家数量统计</li>
+                                <li><i class="fas fa-check text-success me-2"></i>奖池活跃度对比</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-calculator me-2"></i>计算商店数据</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>营收数据分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>利润计算</li>
+                                <li><i class="fas fa-check text-success me-2"></i>库存统计</li>
+                                <li><i class="fas fa-check text-success me-2"></i>交易数据分析</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>使用提示：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>奖池信息实时更新，反映当前游戏状态</li>
+                            <li>支持按主题ID查询特定奖池详情</li>
+                            <li>商店数据计算支持多种时间范围</li>
+                            <li>所有数据都来自游戏服务器的实时信息</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 快速查询表单处理
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[action*="jackpot_info"]');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const themeId = this.querySelector('input[name="theme_id"]').value;
+            if (themeId) {
+                this.action = this.action.replace('theme_id=0', `theme_id=${themeId}`);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

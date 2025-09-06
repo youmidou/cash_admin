@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}计算商店数据{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-calculator me-2"></i>计算商店数据
+                </h1>
+                <a href="{{ url_for('jackpot.jackpot_management') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回奖池管理
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs me-2"></i>计算配置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="calculateForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="theme_id" class="form-label">主题ID</label>
+                                    <input type="number" class="form-control" id="theme_id" name="theme_id" 
+                                           placeholder="可选，留空则计算所有主题">
+                                    <div class="form-text">指定主题ID，留空则计算所有主题的商店数据</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="calculation_type" class="form-label">计算类型</label>
+                                    <select class="form-select" id="calculation_type" name="calculation_type">
+                                        <option value="all">全部数据</option>
+                                        <option value="revenue">营收数据</option>
+                                        <option value="profit">利润数据</option>
+                                        <option value="inventory">库存数据</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="date_range" class="form-label">时间范围</label>
+                                    <select class="form-select" id="date_range" name="date_range">
+                                        <option value="today">今天</option>
+                                        <option value="week">本周</option>
+                                        <option value="month">本月</option>
+                                        <option value="quarter">本季度</option>
+                                        <option value="year">本年</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">计算选项</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_analytics" name="include_analytics" checked>
+                                        <label class="form-check-label" for="include_analytics">
+                                            包含详细分析
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="include_trends" name="include_trends" checked>
+                                        <label class="form-check-label" for="include_trends">
+                                            包含趋势分析
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('jackpot.jackpot_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-success" onclick="return confirmCalculate()">
+                                <i class="fas fa-calculator me-1"></i>开始计算
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>计算说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-coins me-2 text-success"></i>营收数据</h6>
+                        <p class="small text-muted mb-2">计算商店的总收入、日收入、周收入、月收入等</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-chart-line me-2 text-primary"></i>利润数据</h6>
+                        <p class="small text-muted mb-2">计算净利润、利润率、成本分析等</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-boxes me-2 text-info"></i>库存数据</h6>
+                        <p class="small text-muted mb-2">统计商品库存、销售情况、热门商品等</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-chart-bar me-2 text-warning"></i>交易数据</h6>
+                        <p class="small text-muted mb-2">分析交易量、转化率、客户满意度等</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>使用提示
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>支持按主题筛选数据</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>可选择不同时间范围</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>支持多种计算类型</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>包含详细分析报告</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>计算时间
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="h6 text-muted">预计计算时间</div>
+                        <div class="h4 text-primary">2-5秒</div>
+                        <small class="text-muted">根据数据量而定</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmCalculate() {
+    const themeId = document.getElementById('theme_id').value;
+    const calculationType = document.getElementById('calculation_type').value;
+    const dateRange = document.getElementById('date_range').value;
+    
+    let message = `确认要开始计算商店数据吗？\n\n`;
+    message += `计算类型：${calculationType}\n`;
+    message += `时间范围：${dateRange}\n`;
+    
+    if (themeId) {
+        message += `主题ID：${themeId}\n`;
+    } else {
+        message += `主题范围：所有主题\n`;
+    }
+    
+    message += `\n计算可能需要几秒钟时间，请耐心等待。`;
+    
+    return confirm(message);
+}
+</script>
+{% endblock %}

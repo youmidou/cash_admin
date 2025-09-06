@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}重新旋转作弊{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-redo me-2"></i>重新旋转作弊
+                </h1>
+                <a href="{{ url_for('cheat.cheat_management') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回作弊管理
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 警告提示 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>警告：</strong>此功能仅用于开发和调试目的，请谨慎使用。所有操作都会记录在系统日志中。
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-dice me-2"></i>重新旋转配置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="respinForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="user_id" class="form-label">用户ID <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="user_id" name="user_id" required>
+                                    <div class="form-text">请输入要执行重新旋转的用户ID</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="theme_id" class="form-label">主题ID</label>
+                                    <input type="number" class="form-control" id="theme_id" name="theme_id" 
+                                           value="10050" placeholder="主题ID">
+                                    <div class="form-text">指定要使用的主题ID</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="bet_amount" class="form-label">下注金额</label>
+                                    <input type="number" class="form-control" id="bet_amount" name="bet_amount" 
+                                           value="1000" min="0" placeholder="下注金额">
+                                    <div class="form-text">设置下注金额</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="reason" class="form-label">操作原因</label>
+                                    <input type="text" class="form-control" id="reason" name="reason" 
+                                           value="管理员调试" placeholder="请输入操作原因">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h6><i class="fas fa-target me-2"></i>目标结果设置</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="target_win" class="form-label">中奖金额</label>
+                                    <input type="number" class="form-control" id="target_win" name="target_win" 
+                                           min="0" placeholder="设置中奖金额">
+                                    <div class="form-text">强制设置中奖金额</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="target_free_spins" class="form-label">免费旋转次数</label>
+                                    <input type="number" class="form-control" id="target_free_spins" name="target_free_spins" 
+                                           min="0" placeholder="免费旋转次数">
+                                    <div class="form-text">设置免费旋转次数</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="target_jackpot" name="target_jackpot">
+                                        <label class="form-check-label" for="target_jackpot">
+                                            触发累积奖池
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="target_bonus" name="target_bonus">
+                                        <label class="form-check-label" for="target_bonus">
+                                            触发奖励功能
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="target_mega_win" name="target_mega_win">
+                                        <label class="form-check-label" for="target_mega_win">
+                                            触发超级大奖
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('cheat.cheat_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-primary" onclick="return confirmRespin()">
+                                <i class="fas fa-redo me-1"></i>执行重新旋转
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>功能说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-user me-2 text-primary"></i>用户ID</h6>
+                        <p class="small text-muted mb-2">要执行重新旋转的目标用户</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-palette me-2 text-info"></i>主题ID</h6>
+                        <p class="small text-muted mb-2">指定要使用的游戏主题</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-coins me-2 text-warning"></i>下注金额</h6>
+                        <p class="small text-muted mb-2">设置旋转时的下注金额</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-trophy me-2 text-success"></i>中奖金额</h6>
+                        <p class="small text-muted mb-2">强制设置旋转结果的中奖金额</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-redo me-2 text-primary"></i>免费旋转</h6>
+                        <p class="small text-muted mb-2">设置免费旋转的次数</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-star me-2 text-warning"></i>特殊功能</h6>
+                        <p class="small text-muted mb-2">触发各种特殊游戏功能</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>使用场景
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>测试中奖场景</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>验证特殊功能</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>调试游戏逻辑</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>演示游戏功能</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>注意事项
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>仅用于开发和测试</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>会影响游戏平衡</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>操作会记录在日志中</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>请谨慎使用</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmRespin() {
+    const userId = document.getElementById('user_id').value;
+    
+    if (!userId) {
+        alert('请填写用户ID');
+        return false;
+    }
+    
+    return confirm(`确认要对用户 ${userId} 执行重新旋转作弊吗？\n\n此操作会强制设置旋转结果，请谨慎操作！`);
+}
+</script>
+{% endblock %}

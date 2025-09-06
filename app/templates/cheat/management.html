@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}作弊管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-bug me-2"></i>作弊管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 警告提示 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>警告：</strong>作弊管理功能仅用于开发和调试目的，请谨慎使用。所有操作都会记录在系统日志中。
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能卡片 -->
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-cogs fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">执行作弊操作</h5>
+                    <p class="card-text text-muted">执行各种调试用的作弊操作，如修改用户属性、强制结果等</p>
+                    <a href="{{ url_for('cheat.execute_cheat') }}" class="btn btn-warning">
+                        <i class="fas fa-play me-1"></i>执行作弊
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-redo fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">重新旋转作弊</h5>
+                    <p class="card-text text-muted">强制指定旋转结果，用于测试特定游戏场景</p>
+                    <a href="{{ url_for('cheat.respin_cheat') }}" class="btn btn-primary">
+                        <i class="fas fa-redo me-1"></i>重新旋转
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-broom fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">清理断开连接数据</h5>
+                    <p class="card-text text-muted">清理用户断开连接时的临时数据，释放服务器资源</p>
+                    <a href="{{ url_for('cheat.clean_disconnect_data') }}" class="btn btn-success">
+                        <i class="fas fa-broom me-1"></i>清理数据
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作说明 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>功能说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-cogs me-2"></i>执行作弊操作</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>修改用户金币、宝石数量</li>
+                                <li><i class="fas fa-check text-success me-2"></i>调整用户等级和VIP等级</li>
+                                <li><i class="fas fa-check text-success me-2"></i>强制设置游戏状态</li>
+                                <li><i class="fas fa-check text-success me-2"></i>测试特殊游戏场景</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-redo me-2"></i>重新旋转作弊</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>强制指定旋转结果</li>
+                                <li><i class="fas fa-check text-success me-2"></i>测试中奖场景</li>
+                                <li><i class="fas fa-check text-success me-2"></i>触发特殊功能</li>
+                                <li><i class="fas fa-check text-success me-2"></i>验证游戏逻辑</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-broom me-2"></i>清理断开连接数据</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>清理用户临时数据</li>
+                                <li><i class="fas fa-check text-success me-2"></i>释放服务器资源</li>
+                                <li><i class="fas fa-check text-success me-2"></i>修复连接异常</li>
+                                <li><i class="fas fa-check text-success me-2"></i>优化系统性能</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>重要提醒：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>作弊功能仅用于开发和测试环境</li>
+                            <li>生产环境请谨慎使用或禁用</li>
+                            <li>所有操作都会记录在系统日志中</li>
+                            <li>请确保操作前已备份重要数据</li>
+                            <li>建议在测试用户上进行操作</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

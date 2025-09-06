@@ -227,6 +227,57 @@ class GameServerAPI:
         }
         return self._make_request('POST', '/api/admin/reward/send-inbox-gift', data=data)
     
+    # ==================== 作弊管理 ====================
+    
+    def execute_cheat(self, user_id, cheat_type, cheat_params=None, reason='管理员调试'):
+        """执行作弊操作（调试用）"""
+        data = {
+            'user_id': user_id,
+            'cheat_type': cheat_type,
+            'cheat_params': cheat_params or {},
+            'reason': reason
+        }
+        return self._make_request('POST', '/api/admin/cheat/execute', data=data)
+    
+    def respin_cheat(self, user_id, theme_id=10050, bet_amount=1000, target_result=None, reason='管理员调试'):
+        """重新旋转作弊"""
+        data = {
+            'user_id': user_id,
+            'theme_id': theme_id,
+            'bet_amount': bet_amount,
+            'target_result': target_result or {},
+            'reason': reason
+        }
+        return self._make_request('POST', '/api/admin/cheat/respin', data=data)
+    
+    def clean_disconnect_data(self, user_id=None, clean_type='all', reason='管理员清理'):
+        """清理断开连接数据"""
+        data = {
+            'user_id': user_id,
+            'clean_type': clean_type,
+            'reason': reason
+        }
+        return self._make_request('POST', '/api/admin/cheat/clean-disconnect-data', data=data)
+    
+    # ==================== 奖池管理 ====================
+    
+    def get_jackpot_info(self, theme_id):
+        """获取指定主题的奖池信息"""
+        return self._make_request('GET', f'/api/admin/jackpot/{theme_id}')
+    
+    def get_all_jackpot_info(self):
+        """获取所有奖池信息"""
+        return self._make_request('GET', '/api/admin/jackpot/all')
+    
+    def calculate_store_data(self, theme_id=None, calculation_type='all', date_range='today'):
+        """计算商店数据"""
+        data = {
+            'theme_id': theme_id,
+            'calculation_type': calculation_type,
+            'date_range': date_range
+        }
+        return self._make_request('POST', '/api/admin/jackpot/calculate-store', data=data)
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')

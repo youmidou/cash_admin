@@ -30,4 +30,10 @@ def create_app(config_name='default'):
     from app.reward import bp as reward_bp
     app.register_blueprint(reward_bp, url_prefix='/reward')
     
+    from app.cheat import bp as cheat_bp
+    app.register_blueprint(cheat_bp, url_prefix='/cheat')
+    
+    from app.jackpot import bp as jackpot_bp
+    app.register_blueprint(jackpot_bp, url_prefix='/jackpot')
+    
     return app
