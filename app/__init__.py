@@ -24,4 +24,7 @@ def create_app(config_name='default'):
     from app.activity import bp as activity_bp
     app.register_blueprint(activity_bp, url_prefix='/activity')
     
+    from app.system import bp as system_bp
+    app.register_blueprint(system_bp, url_prefix='/system')
+    
     return app

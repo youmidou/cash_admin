@@ -138,6 +138,20 @@ class GameServerAPI:
         """强制用户退出"""
         return self._make_request('POST', f'/api/admin/user/{user_id}/force-logout')
     
+    # ==================== 系统管理 ====================
+    
+    def update_system_config(self, config_data):
+        """更新系统配置"""
+        return self._make_request('POST', '/api/admin/system/update-config', data=config_data)
+    
+    def set_today_begin(self, begin_time):
+        """设置今日开始时间"""
+        return self._make_request('POST', '/api/admin/system/set-today-begin', data={'begin_time': begin_time})
+    
+    def reset_system_time(self, reset_type='all'):
+        """重置系统时间"""
+        return self._make_request('POST', '/api/admin/system/reset-time', data={'reset_type': reset_type})
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')
