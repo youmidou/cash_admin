@@ -10,30 +10,28 @@ def user_list():
     """用户列表页面"""
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
+    limit = 15  # 每页显示15行
     
     api = GameServerAPI()
     
-    # 获取在线用户数量
-    online_data = api.get_online_users()
-    online_count = online_data.get('online_user_num', 0) if online_data.get('error') is None else 0
-    
-    # 获取系统信息（包含在线用户列表）
-    system_info = api.get_system_info()
-    
-    # 获取用户映射信息
-    user_map_data = api.get_user_map()
+    # 获取在线用户数据（带分页）
+    online_data = api.get_online_users(page=page, limit=limit)
     
     # 处理真实的游戏服务器数据
     users_data = {
         'users': [],
         'total': 0,
         'total_pages': 1,
-        'online_count': online_count
+        'page': page,
+        'limit': limit,
+        'online_count': 0
     }
     
     # 从在线用户数据中获取用户信息
     if online_data.get('error') is None and online_data.get('data'):
         online_users = online_data.get('data', [])
+        total_users = online_data.get('online_user_num', 0)
+        total_pages = online_data.get('total_pages', 1)
         
         # 为每个在线用户创建详细信息
         for user in online_users:
@@ -53,27 +51,52 @@ def user_list():
             }
             users_data['users'].append(user_info)
         
-        users_data['total'] = len(online_users)
-        users_data['online_count'] = len(online_users)
+        users_data['total'] = total_users
+        users_data['total_pages'] = total_pages
+        users_data['online_count'] = total_users
         
-        # 实现搜索功能
+        # 实现搜索功能（如果搜索，需要重新获取所有数据）
         if search:
-            # 根据用户ID或用户名进行搜索
-            filtered_users = []
-            for user in users_data['users']:
-                user_id_str = str(user['id'])
-                username = user.get('username', '')
-                if (search.lower() in user_id_str.lower() or 
-                    search.lower() in username.lower()):
-                    filtered_users.append(user)
-            users_data['users'] = filtered_users
-            users_data['total'] = len(filtered_users)
+            # 获取所有用户数据进行搜索
+            all_online_data = api.get_online_users(page=1, limit=1000)  # 获取大量数据用于搜索
+            if all_online_data.get('error') is None and all_online_data.get('data'):
+                all_users = all_online_data.get('data', [])
+                filtered_users = []
+                for user in all_users:
+                    user_id_str = str(user.get('user_id', ''))
+                    username = user.get('username', '')
+                    if (search.lower() in user_id_str.lower() or 
+                        search.lower() in username.lower()):
+                        user_info = {
+                            'id': user.get('user_id', 'N/A'),
+                            'username': user.get('username', f'User_{user.get("user_id", "N/A")}'),
+                            'level': user.get('level', 1),
+                            'vip_level': user.get('vip_level', 0),
+                            'coins': user.get('coins', 0),
+                            'gems': user.get('gems', 0),
+                            'total_purchase': user.get('total_purchase', 0),
+                            'register_time': user.get('register_time', 'N/A'),
+                            'last_login': user.get('login_time', 'N/A'),
+                            'is_online': True,
+                            'platform_type': user.get('platform_type', 'Unknown'),
+                            'device_model': 'Unknown'
+                        }
+                        filtered_users.append(user_info)
+                
+                # 对搜索结果进行分页
+                start = (page - 1) * limit
+                end = start + limit
+                users_data['users'] = filtered_users[start:end]
+                users_data['total'] = len(filtered_users)
+                users_data['total_pages'] = (len(filtered_users) + limit - 1) // limit
     else:
         # 如果无法获取系统信息，显示错误信息
         users_data = {
             'users': [],
             'total': 0,
             'total_pages': 1,
+            'page': page,
+            'limit': limit,
             'online_count': 0,
             'error': '无法连接到游戏服务器'
         }
@@ -82,7 +105,7 @@ def user_list():
                          users_data=users_data,
                          current_page=page,
                          search=search,
-                         online_count=online_count)
+                         online_count=users_data['online_count'])
 
 @bp.route('/<int:user_id>')
 @login_required
@@ -221,14 +244,19 @@ def api_online_users():
     api = GameServerAPI()
     
     try:
-        # 获取在线用户数据
-        online_data = api.get_online_users()
+        # 获取分页参数
+        page = request.args.get('page', 1, type=int)
+        limit = request.args.get('limit', 15, type=int)
+        
+        # 获取在线用户数据（带分页）
+        online_data = api.get_online_users(page=page, limit=limit)
         if online_data.get('error'):
             return jsonify({'error': online_data['error']}), 500
         
         # 获取在线用户列表和数量
         online_users = online_data.get('data', [])
         online_count = online_data.get('online_user_num', len(online_users))
+        total_pages = online_data.get('total_pages', 1)
         
         # 获取系统信息
         system_info = api.get_system_info()
@@ -237,6 +265,9 @@ def api_online_users():
             'online_count': online_count,
             'online_users': online_users,
             'system_info': system_info,
+            'page': page,
+            'limit': limit,
+            'total_pages': total_pages,
             'timestamp': int(time.time())
         })
     except Exception as e:

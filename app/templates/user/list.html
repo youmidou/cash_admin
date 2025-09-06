@@ -158,34 +158,83 @@
             </div>
             
             <!-- 分页 -->
-            {% if users_data.get('total_pages', 1) > 1 %}
+            {% if users_data and users_data.get('total_pages', 0) > 1 %}
             <nav aria-label="用户列表分页">
-                <ul class="pagination justify-content-center">
-                    {% if current_page > 1 %}
+                <ul class="pagination justify-content-center mt-4">
+                    <!-- 上一页 -->
+                    {% if users_data.get('has_prev') %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ current_page - 1 }}&search={{ search }}">上一页</a>
+                        <a class="page-link" href="?page={{ users_data.page-1 }}&search={{ search }}">
+                            <i class="fas fa-chevron-left"></i> 上一页
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="fas fa-chevron-left"></i> 上一页
+                        </span>
                     </li>
                     {% endif %}
                     
-                    {% for page_num in range(1, users_data.total_pages + 1) %}
-                        {% if page_num == current_page %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ page_num }}</span>
-                        </li>
-                        {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_num }}&search={{ search }}">{{ page_num }}</a>
-                        </li>
-                        {% endif %}
+                    <!-- 页码 -->
+                    {% set current_page = users_data.get('page', 1) %}
+                    {% set total_pages = users_data.get('total_pages', 1) %}
+                    {% set start_page = [1, current_page - 2]|max %}
+                    {% set end_page = [total_pages, current_page + 2]|min %}
+                    
+                    {% if start_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1&search={{ search }}">1</a>
+                    </li>
+                    {% if start_page > 2 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    
+                    {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                        <a class="page-link" href="?page={{ page_num }}&search={{ search }}">{{ page_num }}</a>
+                    </li>
                     {% endfor %}
                     
-                    {% if current_page < users_data.total_pages %}
+                    {% if end_page < total_pages %}
+                    {% if end_page < total_pages - 1 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ current_page + 1 }}&search={{ search }}">下一页</a>
+                        <a class="page-link" href="?page={{ total_pages }}&search={{ search }}">{{ total_pages }}</a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- 下一页 -->
+                    {% if users_data.get('has_next') %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ users_data.page+1 }}&search={{ search }}">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </span>
                     </li>
                     {% endif %}
                 </ul>
             </nav>
+            
+            <!-- 分页信息 -->
+            <div class="text-center text-muted">
+                <small>
+                    显示第 {{ (users_data.page - 1) * users_data.limit + 1 }} - 
+                    {{ [users_data.page * users_data.limit, users_data.total]|min }} 条，
+                    共 {{ users_data.total }} 条用户，第 {{ users_data.page }} / {{ users_data.total_pages }} 页
+                </small>
+            </div>
             {% endif %}
         {% else %}
             <div class="text-center py-5">

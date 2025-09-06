@@ -66,9 +66,9 @@ class GameServerAPI:
         
         return self._make_request('GET', endpoint)
     
-    def get_online_users(self):
+    def get_online_users(self, page=1, limit=15):
         """获取在线用户列表"""
-        return self._make_request('GET', '/api/admin/online-users')
+        return self._make_request('GET', f'/api/admin/online-users?page={page}&limit={limit}')
     
     def get_system_info(self):
         """获取系统信息"""
