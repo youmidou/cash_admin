@@ -39,4 +39,7 @@ def create_app(config_name='default'):
     from app.report import bp as report_bp
     app.register_blueprint(report_bp, url_prefix='/report')
     
+    from app.broadcast import bp as broadcast_bp
+    app.register_blueprint(broadcast_bp, url_prefix='/broadcast')
+    
     return app

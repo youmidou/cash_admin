@@ -320,6 +320,54 @@ class GameServerAPI:
         """设置更新配置"""
         return self._make_request('POST', '/api/admin/config/update', data=config_data)
     
+    # ==================== 活动管理 ====================
+    
+    def get_activity_config(self):
+        """获取活动配置"""
+        return self._make_request('GET', '/api/admin/activity/config')
+    
+    def set_activity_config(self, config_data):
+        """设置活动配置"""
+        return self._make_request('POST', '/api/admin/activity/config', data=config_data)
+    
+    def get_activity_default_config(self):
+        """获取活动默认配置"""
+        return self._make_request('GET', '/api/admin/activity/config/default')
+    
+    def get_ac_config(self):
+        """获取AC配置"""
+        return self._make_request('GET', '/api/admin/activity/ac/config')
+    
+    def set_ac_config(self, config_data):
+        """设置AC配置"""
+        return self._make_request('POST', '/api/admin/activity/ac/config', data=config_data)
+    
+    def get_ac_default_config(self):
+        """获取AC默认配置"""
+        return self._make_request('GET', '/api/admin/activity/ac/config/default')
+    
+    # ==================== 广播管理 ====================
+    
+    def get_broadcast_config(self):
+        """获取广播配置"""
+        return self._make_request('GET', '/api/admin/broadcast/config')
+    
+    def set_broadcast_config(self, config_data):
+        """设置广播配置"""
+        return self._make_request('POST', '/api/admin/broadcast/config', data=config_data)
+    
+    def get_broadcast_sender_key(self):
+        """获取广播发送者密钥"""
+        return self._make_request('GET', '/api/admin/broadcast/sender-key')
+    
+    def send_broadcast(self, broadcast_data):
+        """发送广播消息"""
+        return self._make_request('POST', '/api/admin/broadcast/send', data=broadcast_data)
+    
+    def get_broadcast_history(self, page=1, limit=20):
+        """获取广播历史记录"""
+        return self._make_request('GET', f'/api/admin/broadcast/history?page={page}&limit={limit}')
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')

@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+
+{% block title %}活动配置{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-gift me-2"></i>活动配置
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('activity.activity_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回活动管理
+                    </a>
+                    <button class="btn btn-primary" onclick="saveConfig()">
+                        <i class="fas fa-save me-1"></i>保存配置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="activityConfigForm" method="POST" action="{{ url_for('activity.update_activity_config') }}">
+        <div class="row">
+            <!-- 登录奖励配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-sign-in-alt me-2"></i>登录奖励配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="login_bonus_enabled" 
+                                   name="login_bonus_enabled" {% if config_data.login_bonus.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="login_bonus_enabled">
+                                启用登录奖励
+                            </label>
+                        </div>
+                        
+                        <h6>每日奖励</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="daily_bonus_base_coins" class="form-label">基础金币</label>
+                                <input type="number" class="form-control" id="daily_bonus_base_coins" 
+                                       name="daily_bonus_base_coins" value="{{ config_data.login_bonus.daily_bonus.base_coins or 10000 }}" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label for="daily_bonus_multiplier" class="form-label">奖励倍数</label>
+                                <input type="number" class="form-control" id="daily_bonus_multiplier" 
+                                       name="daily_bonus_multiplier" value="{{ config_data.login_bonus.daily_bonus.multiplier or 1.5 }}" 
+                                       step="0.1" min="0.1" max="10">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="daily_bonus_max_days" class="form-label">最大连续天数</label>
+                            <input type="number" class="form-control" id="daily_bonus_max_days" 
+                                   name="daily_bonus_max_days" value="{{ config_data.login_bonus.daily_bonus.max_days or 7 }}" min="1" max="30">
+                        </div>
+                        
+                        <h6>每周奖励</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="weekly_bonus_base_coins" class="form-label">基础金币</label>
+                                <input type="number" class="form-control" id="weekly_bonus_base_coins" 
+                                       name="weekly_bonus_base_coins" value="{{ config_data.login_bonus.weekly_bonus.base_coins or 50000 }}" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label for="weekly_bonus_multiplier" class="form-label">奖励倍数</label>
+                                <input type="number" class="form-control" id="weekly_bonus_multiplier" 
+                                       name="weekly_bonus_multiplier" value="{{ config_data.login_bonus.weekly_bonus.multiplier or 2.0 }}" 
+                                       step="0.1" min="0.1" max="10">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="weekly_bonus_reset_day" class="form-label">重置日（1-7）</label>
+                            <input type="number" class="form-control" id="weekly_bonus_reset_day" 
+                                   name="weekly_bonus_reset_day" value="{{ config_data.login_bonus.weekly_bonus.reset_day or 1 }}" min="1" max="7">
+                        </div>
+                        
+                        <h6>每月奖励</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="monthly_bonus_base_coins" class="form-label">基础金币</label>
+                                <input type="number" class="form-control" id="monthly_bonus_base_coins" 
+                                       name="monthly_bonus_base_coins" value="{{ config_data.login_bonus.monthly_bonus.base_coins or 200000 }}" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label for="monthly_bonus_multiplier" class="form-label">奖励倍数</label>
+                                <input type="number" class="form-control" id="monthly_bonus_multiplier" 
+                                       name="monthly_bonus_multiplier" value="{{ config_data.login_bonus.monthly_bonus.multiplier or 3.0 }}" 
+                                       step="0.1" min="0.1" max="10">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="monthly_bonus_reset_day" class="form-label">重置日（1-31）</label>
+                            <input type="number" class="form-control" id="monthly_bonus_reset_day" 
+                                   name="monthly_bonus_reset_day" value="{{ config_data.login_bonus.monthly_bonus.reset_day or 1 }}" min="1" max="31">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每日任务配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-tasks me-2"></i>每日任务配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="daily_mission_enabled" 
+                                   name="daily_mission_enabled" {% if config_data.daily_mission.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="daily_mission_enabled">
+                                启用每日任务
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="mission_reset_time" class="form-label">重置时间</label>
+                            <input type="time" class="form-control" id="mission_reset_time" 
+                                   name="mission_reset_time" value="{{ config_data.daily_mission.reset_time or '00:00:00' }}">
+                        </div>
+                        
+                        <h6>任务1</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control mb-2" name="mission1_name" 
+                                       value="{{ config_data.daily_mission.missions[0].name if config_data.daily_mission.missions else '每日登录' }}" 
+                                       placeholder="任务名称">
+                            </div>
+                            <div class="col-6">
+                                <select class="form-control mb-2" name="mission1_type">
+                                    <option value="login" {% if config_data.daily_mission.missions[0].type == 'login' %}selected{% endif %}>登录</option>
+                                    <option value="spin" {% if config_data.daily_mission.missions[0].type == 'spin' %}selected{% endif %}>旋转</option>
+                                    <option value="win" {% if config_data.daily_mission.missions[0].type == 'win' %}selected{% endif %}>获胜</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <input type="number" class="form-control" name="mission1_target" 
+                                       value="{{ config_data.daily_mission.missions[0].target if config_data.daily_mission.missions else 1 }}" 
+                                       placeholder="目标数量" min="1">
+                            </div>
+                            <div class="col-4">
+                                <input type="number" class="form-control" name="mission1_reward" 
+                                       value="{{ config_data.daily_mission.missions[0].reward.coins if config_data.daily_mission.missions else 5000 }}" 
+                                       placeholder="奖励金币" min="0">
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="mission1_enabled" 
+                                           {% if config_data.daily_mission.missions[0].enabled %}checked{% endif %}>
+                                    <label class="form-check-label">启用</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h6>任务2</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control mb-2" name="mission2_name" 
+                                       value="{{ config_data.daily_mission.missions[1].name if config_data.daily_mission.missions|length > 1 else '旋转10次' }}" 
+                                       placeholder="任务名称">
+                            </div>
+                            <div class="col-6">
+                                <select class="form-control mb-2" name="mission2_type">
+                                    <option value="login" {% if config_data.daily_mission.missions[1].type == 'login' %}selected{% endif %}>登录</option>
+                                    <option value="spin" {% if config_data.daily_mission.missions[1].type == 'spin' %}selected{% endif %}>旋转</option>
+                                    <option value="win" {% if config_data.daily_mission.missions[1].type == 'win' %}selected{% endif %}>获胜</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <input type="number" class="form-control" name="mission2_target" 
+                                       value="{{ config_data.daily_mission.missions[1].target if config_data.daily_mission.missions|length > 1 else 10 }}" 
+                                       placeholder="目标数量" min="1">
+                            </div>
+                            <div class="col-4">
+                                <input type="number" class="form-control" name="mission2_reward" 
+                                       value="{{ config_data.daily_mission.missions[1].reward.coins if config_data.daily_mission.missions|length > 1 else 10000 }}" 
+                                       placeholder="奖励金币" min="0">
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="mission2_enabled" 
+                                           {% if config_data.daily_mission.missions[1].enabled %}checked{% endif %}>
+                                    <label class="form-check-label">启用</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h6>任务3</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control mb-2" name="mission3_name" 
+                                       value="{{ config_data.daily_mission.missions[2].name if config_data.daily_mission.missions|length > 2 else '获胜5次' }}" 
+                                       placeholder="任务名称">
+                            </div>
+                            <div class="col-6">
+                                <select class="form-control mb-2" name="mission3_type">
+                                    <option value="login" {% if config_data.daily_mission.missions[2].type == 'login' %}selected{% endif %}>登录</option>
+                                    <option value="spin" {% if config_data.daily_mission.missions[2].type == 'spin' %}selected{% endif %}>旋转</option>
+                                    <option value="win" {% if config_data.daily_mission.missions[2].type == 'win' %}selected{% endif %}>获胜</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <input type="number" class="form-control" name="mission3_target" 
+                                       value="{{ config_data.daily_mission.missions[2].target if config_data.daily_mission.missions|length > 2 else 5 }}" 
+                                       placeholder="目标数量" min="1">
+                            </div>
+                            <div class="col-4">
+                                <input type="number" class="form-control" name="mission3_reward" 
+                                       value="{{ config_data.daily_mission.missions[2].reward.coins if config_data.daily_mission.missions|length > 2 else 15000 }}" 
+                                       placeholder="奖励金币" min="0">
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="mission3_enabled" 
+                                           {% if config_data.daily_mission.missions[2].enabled %}checked{% endif %}>
+                                    <label class="form-check-label">启用</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 特殊事件配置 -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-calendar-check me-2"></i>特殊事件配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="special_events_enabled" 
+                                   name="special_events_enabled" {% if config_data.special_events.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="special_events_enabled">
+                                启用特殊事件
+                            </label>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6>事件1</h6>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <input type="text" class="form-control mb-2" name="event1_name" 
+                                               value="{{ config_data.special_events.events[0].name if config_data.special_events.events else '双倍经验日' }}" 
+                                               placeholder="事件名称">
+                                    </div>
+                                    <div class="col-6">
+                                        <select class="form-control mb-2" name="event1_type">
+                                            <option value="double_exp" {% if config_data.special_events.events[0].type == 'double_exp' %}selected{% endif %}>双倍经验</option>
+                                            <option value="double_coins" {% if config_data.special_events.events[0].type == 'double_coins' %}selected{% endif %}>双倍金币</option>
+                                            <option value="bonus_spins" {% if config_data.special_events.events[0].type == 'bonus_spins' %}selected{% endif %}>奖励旋转</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <input type="datetime-local" class="form-control mb-2" name="event1_start_time" 
+                                               value="{{ config_data.special_events.events[0].start_time if config_data.special_events.events else '' }}" 
+                                               placeholder="开始时间">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="datetime-local" class="form-control mb-2" name="event1_end_time" 
+                                               value="{{ config_data.special_events.events[0].end_time if config_data.special_events.events else '' }}" 
+                                               placeholder="结束时间">
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="event1_enabled" 
+                                           {% if config_data.special_events.events[0].enabled %}checked{% endif %}>
+                                    <label class="form-check-label">启用事件1</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6">
+                                <h6>事件2</h6>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <input type="text" class="form-control mb-2" name="event2_name" 
+                                               value="{{ config_data.special_events.events[1].name if config_data.special_events.events|length > 1 else '金币翻倍' }}" 
+                                               placeholder="事件名称">
+                                    </div>
+                                    <div class="col-6">
+                                        <select class="form-control mb-2" name="event2_type">
+                                            <option value="double_exp" {% if config_data.special_events.events[1].type == 'double_exp' %}selected{% endif %}>双倍经验</option>
+                                            <option value="double_coins" {% if config_data.special_events.events[1].type == 'double_coins' %}selected{% endif %}>双倍金币</option>
+                                            <option value="bonus_spins" {% if config_data.special_events.events[1].type == 'bonus_spins' %}selected{% endif %}>奖励旋转</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <input type="datetime-local" class="form-control mb-2" name="event2_start_time" 
+                                               value="{{ config_data.special_events.events[1].start_time if config_data.special_events.events|length > 1 else '' }}" 
+                                               placeholder="开始时间">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="datetime-local" class="form-control mb-2" name="event2_end_time" 
+                                               value="{{ config_data.special_events.events[1].end_time if config_data.special_events.events|length > 1 else '' }}" 
+                                               placeholder="结束时间">
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="event2_enabled" 
+                                           {% if config_data.special_events.events[1].enabled %}checked{% endif %}>
+                                    <label class="form-check-label">启用事件2</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 配置信息 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary" onclick="saveConfig()">
+                            <i class="fas fa-save me-1"></i>保存配置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetConfig()">
+                            <i class="fas fa-undo me-1"></i>重置配置
+                        </button>
+                        <button class="btn btn-info" onclick="previewConfig()">
+                            <i class="fas fa-eye me-1"></i>预览配置
+                        </button>
+                    </div>
+                    <hr>
+                    <small class="text-muted">
+                        最后更新时间：{{ config_data.last_updated or '未知' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function saveConfig() {
+    document.getElementById('activityConfigForm').submit();
+}
+
+function resetConfig() {
+    if (confirm('确定要重置所有配置到默认值吗？')) {
+        location.reload();
+    }
+}
+
+function previewConfig() {
+    const formData = new FormData(document.getElementById('activityConfigForm'));
+    const config = {};
+    
+    for (let [key, value] of formData.entries()) {
+        config[key] = value;
+    }
+    
+    alert('配置预览：\n' + JSON.stringify(config, null, 2));
+}
+</script>
+{% endblock %}

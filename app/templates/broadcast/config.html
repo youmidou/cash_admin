@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}广播配置{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-cog me-2"></i>广播配置
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('broadcast.broadcast_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回广播管理
+                    </a>
+                    <button class="btn btn-primary" onclick="saveConfig()">
+                        <i class="fas fa-save me-1"></i>保存配置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="broadcastConfigForm" method="POST" action="{{ url_for('broadcast.update_broadcast_config') }}">
+        <div class="row">
+            <!-- 系统广播配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-server me-2"></i>系统广播配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="system_broadcast_enabled" 
+                                   name="system_broadcast_enabled" {% if config_data.system_broadcast.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="system_broadcast_enabled">
+                                启用系统广播
+                            </label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="system_broadcast_max_length" class="form-label">最大长度</label>
+                                <input type="number" class="form-control" id="system_broadcast_max_length" 
+                                       name="system_broadcast_max_length" value="{{ config_data.system_broadcast.max_length or 200 }}" min="1" max="1000">
+                            </div>
+                            <div class="col-6">
+                                <label for="system_broadcast_cooldown" class="form-label">冷却时间(秒)</label>
+                                <input type="number" class="form-control" id="system_broadcast_cooldown" 
+                                       name="system_broadcast_cooldown" value="{{ config_data.system_broadcast.cooldown_seconds or 30 }}" min="1" max="3600">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="system_broadcast_auto_delete" class="form-label">自动删除时间(秒)</label>
+                            <input type="number" class="form-control" id="system_broadcast_auto_delete" 
+                                   name="system_broadcast_auto_delete" value="{{ config_data.system_broadcast.auto_delete_after or 3600 }}" min="60" max="86400">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">允许的消息类型</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="system_broadcast_types" value="info" 
+                                       {% if 'info' in config_data.system_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">信息</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="system_broadcast_types" value="warning" 
+                                       {% if 'warning' in config_data.system_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">警告</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="system_broadcast_types" value="success" 
+                                       {% if 'success' in config_data.system_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">成功</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="system_broadcast_types" value="error" 
+                                       {% if 'error' in config_data.system_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">错误</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="system_broadcast_default_type" class="form-label">默认消息类型</label>
+                            <select class="form-control" id="system_broadcast_default_type" name="system_broadcast_default_type">
+                                <option value="info" {% if config_data.system_broadcast.default_type == 'info' %}selected{% endif %}>信息</option>
+                                <option value="warning" {% if config_data.system_broadcast.default_type == 'warning' %}selected{% endif %}>警告</option>
+                                <option value="success" {% if config_data.system_broadcast.default_type == 'success' %}selected{% endif %}>成功</option>
+                                <option value="error" {% if config_data.system_broadcast.default_type == 'error' %}selected{% endif %}>错误</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户广播配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user me-2"></i>用户广播配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="user_broadcast_enabled" 
+                                   name="user_broadcast_enabled" {% if config_data.user_broadcast.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="user_broadcast_enabled">
+                                启用用户广播
+                            </label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="user_broadcast_max_length" class="form-label">最大长度</label>
+                                <input type="number" class="form-control" id="user_broadcast_max_length" 
+                                       name="user_broadcast_max_length" value="{{ config_data.user_broadcast.max_length or 100 }}" min="1" max="500">
+                            </div>
+                            <div class="col-6">
+                                <label for="user_broadcast_cooldown" class="form-label">冷却时间(秒)</label>
+                                <input type="number" class="form-control" id="user_broadcast_cooldown" 
+                                       name="user_broadcast_cooldown" value="{{ config_data.user_broadcast.cooldown_seconds or 60 }}" min="1" max="3600">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="user_broadcast_auto_delete" class="form-label">自动删除时间(秒)</label>
+                                <input type="number" class="form-control" id="user_broadcast_auto_delete" 
+                                       name="user_broadcast_auto_delete" value="{{ config_data.user_broadcast.auto_delete_after or 1800 }}" min="60" max="86400">
+                            </div>
+                            <div class="col-6">
+                                <label for="user_broadcast_min_level" class="form-label">最低等级要求</label>
+                                <input type="number" class="form-control" id="user_broadcast_min_level" 
+                                       name="user_broadcast_min_level" value="{{ config_data.user_broadcast.min_level_required or 5 }}" min="1" max="100">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="user_broadcast_cost" class="form-label">发送费用(金币)</label>
+                            <input type="number" class="form-control" id="user_broadcast_cost" 
+                                   name="user_broadcast_cost" value="{{ config_data.user_broadcast.cost_coins or 1000 }}" min="0" max="100000">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">允许的消息类型</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="user_broadcast_types" value="info" 
+                                       {% if 'info' in config_data.user_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">信息</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="user_broadcast_types" value="warning" 
+                                       {% if 'warning' in config_data.user_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">警告</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="user_broadcast_default_type" class="form-label">默认消息类型</label>
+                            <select class="form-control" id="user_broadcast_default_type" name="user_broadcast_default_type">
+                                <option value="info" {% if config_data.user_broadcast.default_type == 'info' %}selected{% endif %}>信息</option>
+                                <option value="warning" {% if config_data.user_broadcast.default_type == 'warning' %}selected{% endif %}>警告</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 管理员广播配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user-shield me-2"></i>管理员广播配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="admin_broadcast_enabled" 
+                                   name="admin_broadcast_enabled" {% if config_data.admin_broadcast.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="admin_broadcast_enabled">
+                                启用管理员广播
+                            </label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="admin_broadcast_max_length" class="form-label">最大长度</label>
+                                <input type="number" class="form-control" id="admin_broadcast_max_length" 
+                                       name="admin_broadcast_max_length" value="{{ config_data.admin_broadcast.max_length or 500 }}" min="1" max="2000">
+                            </div>
+                            <div class="col-6">
+                                <label for="admin_broadcast_cooldown" class="form-label">冷却时间(秒)</label>
+                                <input type="number" class="form-control" id="admin_broadcast_cooldown" 
+                                       name="admin_broadcast_cooldown" value="{{ config_data.admin_broadcast.cooldown_seconds or 10 }}" min="1" max="3600">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="admin_broadcast_auto_delete" class="form-label">自动删除时间(秒)</label>
+                            <input type="number" class="form-control" id="admin_broadcast_auto_delete" 
+                                   name="admin_broadcast_auto_delete" value="{{ config_data.admin_broadcast.auto_delete_after or 7200 }}" min="60" max="86400">
+                        </div>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="admin_broadcast_require_key" 
+                                   name="admin_broadcast_require_key" {% if config_data.admin_broadcast.require_admin_key %}checked{% endif %}>
+                            <label class="form-check-label" for="admin_broadcast_require_key">
+                                需要管理员密钥
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">允许的消息类型</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="admin_broadcast_types" value="info" 
+                                       {% if 'info' in config_data.admin_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">信息</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="admin_broadcast_types" value="warning" 
+                                       {% if 'warning' in config_data.admin_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">警告</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="admin_broadcast_types" value="success" 
+                                       {% if 'success' in config_data.admin_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">成功</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="admin_broadcast_types" value="error" 
+                                       {% if 'error' in config_data.admin_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">错误</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="admin_broadcast_types" value="announcement" 
+                                       {% if 'announcement' in config_data.admin_broadcast.allowed_types %}checked{% endif %}>
+                                <label class="form-check-label">公告</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="admin_broadcast_default_type" class="form-label">默认消息类型</label>
+                            <select class="form-control" id="admin_broadcast_default_type" name="admin_broadcast_default_type">
+                                <option value="info" {% if config_data.admin_broadcast.default_type == 'info' %}selected{% endif %}>信息</option>
+                                <option value="warning" {% if config_data.admin_broadcast.default_type == 'warning' %}selected{% endif %}>警告</option>
+                                <option value="success" {% if config_data.admin_broadcast.default_type == 'success' %}selected{% endif %}>成功</option>
+                                <option value="error" {% if config_data.admin_broadcast.default_type == 'error' %}selected{% endif %}>错误</option>
+                                <option value="announcement" {% if config_data.admin_broadcast.default_type == 'announcement' %}selected{% endif %}>公告</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 广播频道配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-broadcast-tower me-2"></i>广播频道配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>全服广播</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" name="channel_global_enabled" 
+                                   {% if config_data.broadcast_channels.global.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用全服广播</label>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_global_name" 
+                                       value="{{ config_data.broadcast_channels.global.name or '全服广播' }}" placeholder="频道名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_global_description" 
+                                       value="{{ config_data.broadcast_channels.global.description or '发送给所有在线玩家的广播' }}" placeholder="频道描述">
+                            </div>
+                        </div>
+                        
+                        <h6>等级广播</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" name="channel_level_enabled" 
+                                   {% if config_data.broadcast_channels.level_based.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用等级广播</label>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_level_name" 
+                                       value="{{ config_data.broadcast_channels.level_based.name or '等级广播' }}" placeholder="频道名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_level_description" 
+                                       value="{{ config_data.broadcast_channels.level_based.description or '根据玩家等级发送的广播' }}" placeholder="频道描述">
+                            </div>
+                        </div>
+                        
+                        <h6>VIP广播</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" name="channel_vip_enabled" 
+                                   {% if config_data.broadcast_channels.vip_only.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用VIP广播</label>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_vip_name" 
+                                       value="{{ config_data.broadcast_channels.vip_only.name or 'VIP广播' }}" placeholder="频道名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_vip_description" 
+                                       value="{{ config_data.broadcast_channels.vip_only.description or '仅发送给VIP玩家的广播' }}" placeholder="频道描述">
+                            </div>
+                        </div>
+                        
+                        <h6>地区广播</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" name="channel_region_enabled" 
+                                   {% if config_data.broadcast_channels.region_based.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用地区广播</label>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_region_name" 
+                                       value="{{ config_data.broadcast_channels.region_based.name or '地区广播' }}" placeholder="频道名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="text" class="form-control" name="channel_region_description" 
+                                       value="{{ config_data.broadcast_channels.region_based.description or '根据地区发送的广播' }}" placeholder="频道描述">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 配置信息 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary" onclick="saveConfig()">
+                            <i class="fas fa-save me-1"></i>保存配置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetConfig()">
+                            <i class="fas fa-undo me-1"></i>重置配置
+                        </button>
+                        <button class="btn btn-info" onclick="previewConfig()">
+                            <i class="fas fa-eye me-1"></i>预览配置
+                        </button>
+                    </div>
+                    <hr>
+                    <small class="text-muted">
+                        最后更新时间：{{ config_data.last_updated or '未知' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function saveConfig() {
+    document.getElementById('broadcastConfigForm').submit();
+}
+
+function resetConfig() {
+    if (confirm('确定要重置所有配置到默认值吗？')) {
+        location.reload();
+    }
+}
+
+function previewConfig() {
+    const formData = new FormData(document.getElementById('broadcastConfigForm'));
+    const config = {};
+    
+    for (let [key, value] of formData.entries()) {
+        config[key] = value;
+    }
+    
+    alert('配置预览：\n' + JSON.stringify(config, null, 2));
+}
+</script>
+{% endblock %}
