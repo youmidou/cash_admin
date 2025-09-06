@@ -237,6 +237,87 @@ def force_user_logout(user_id):
     
     return redirect(url_for('user.user_list'))
 
+@bp.route('/<int:user_id>/server-info')
+@login_required
+def user_server_info(user_id):
+    """用户服务器信息页面"""
+    api = GameServerAPI()
+    
+    # 获取用户服务器信息
+    server_info = api.get_user_server_info(user_id)
+    
+    if server_info.get('error'):
+        flash(f'获取用户服务器信息失败: {server_info["error"]}', 'error')
+        return redirect(url_for('user.user_list'))
+    
+    return render_template('user/server_info.html', 
+                         user_id=user_id,
+                         server_info=server_info.get('data', {}))
+
+@bp.route('/<int:user_id>/theme-info')
+@login_required
+def user_theme_info(user_id):
+    """用户主题信息页面"""
+    api = GameServerAPI()
+    
+    # 获取用户主题信息
+    theme_info = api.get_user_theme_info(user_id)
+    
+    if theme_info.get('error'):
+        flash(f'获取用户主题信息失败: {theme_info["error"]}', 'error')
+        return redirect(url_for('user.user_list'))
+    
+    return render_template('user/theme_info.html', 
+                         user_id=user_id,
+                         theme_info=theme_info.get('data', {}))
+
+@bp.route('/<int:user_id>/theme-info', methods=['POST'])
+@login_required
+def set_user_theme_info(user_id):
+    """设置用户主题信息"""
+    api = GameServerAPI()
+    
+    try:
+        # 获取表单数据
+        theme_data = {
+            'current_theme': request.form.get('current_theme'),
+            'unlocked_themes': request.form.getlist('unlocked_themes'),
+            'favorite_themes': request.form.getlist('favorite_themes')
+        }
+        
+        # 过滤空值
+        theme_data = {k: v for k, v in theme_data.items() if v}
+        
+        # 调用API设置主题信息
+        result = api.set_user_theme_info(user_id, theme_data)
+        
+        if result.get('success'):
+            flash('用户主题信息设置成功', 'success')
+        else:
+            flash(f'设置用户主题信息失败: {result.get("error", "未知错误")}', 'error')
+            
+    except Exception as e:
+        flash(f'设置用户主题信息失败: {str(e)}', 'error')
+    
+    return redirect(url_for('user.user_theme_info', user_id=user_id))
+
+@bp.route('/user-map')
+@login_required
+def user_map():
+    """用户映射信息页面"""
+    api = GameServerAPI()
+    
+    # 获取用户映射信息
+    user_map_data = api.get_user_map()
+    
+    if user_map_data.get('error'):
+        flash(f'获取用户映射信息失败: {user_map_data["error"]}', 'error')
+        return redirect(url_for('user.user_list'))
+    
+    return render_template('user/user_map.html', 
+                         user_map_data=user_map_data.get('data', {}),
+                         total_users=user_map_data.get('total_users', 0))
+
 @bp.route('/api/online-users')
 @login_required
 def api_online_users():

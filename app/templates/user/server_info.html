@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}用户服务器信息 - 用户{{ user_id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-server me-2"></i>用户服务器信息
+                </h1>
+                <a href="{{ url_for('user.user_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回用户列表
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>用户{{ user_id }}服务器信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if server_info %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>用户ID:</strong></td>
+                                        <td>{{ server_info.get('user_id', 'N/A') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>在线状态:</strong></td>
+                                        <td>
+                                            {% if server_info.get('is_online') %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-circle me-1"></i>在线
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-circle me-1"></i>离线
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>登录时间:</strong></td>
+                                        <td>{{ server_info.get('login_time', 'N/A') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>最后活跃:</strong></td>
+                                        <td>{{ server_info.get('last_active', 'N/A') }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>IP地址:</strong></td>
+                                        <td>{{ server_info.get('ip_address', 'N/A') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>平台类型:</strong></td>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                {{ server_info.get('platform', 'Unknown') }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>连接ID:</strong></td>
+                                        <td><code>{{ server_info.get('connection_id', 'N/A') }}</code></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                            <p>无法获取用户服务器信息</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i>快速操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('user.user_detail', user_id=user_id) }}" class="btn btn-primary">
+                            <i class="fas fa-user me-1"></i>查看用户详情
+                        </a>
+                        <a href="{{ url_for('user.user_theme_info', user_id=user_id) }}" class="btn btn-info">
+                            <i class="fas fa-palette me-1"></i>主题信息
+                        </a>
+                        {% if server_info and server_info.get('is_online') %}
+                        <form method="POST" action="{{ url_for('user.force_user_logout', user_id=user_id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-warning w-100" 
+                                    onclick="return confirm('确定要强制用户{{ user_id }}退出吗？')">
+                                <i class="fas fa-sign-out-alt me-1"></i>强制退出
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>连接统计
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if server_info %}
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-primary">{{ server_info.get('connection_id', 0) }}</h4>
+                                <small class="text-muted">连接ID</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-success">
+                                    {% if server_info.get('is_online') %}1{% else %}0{% endif %}
+                                </h4>
+                                <small class="text-muted">在线状态</small>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <p>暂无统计数据</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

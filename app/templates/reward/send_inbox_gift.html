@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}发送收件箱礼物{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-gift me-2"></i>发送收件箱礼物
+                </h1>
+                <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回奖励管理
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-gift me-2"></i>发送礼物到收件箱
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="user_id" class="form-label">用户ID <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="user_id" name="user_id" required>
+                                    <div class="form-text">请输入要发送礼物的用户ID</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="gift_type" class="form-label">礼物类型 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="gift_type" name="gift_type" required>
+                                        <option value="">请选择礼物类型</option>
+                                        <option value="daily_bonus">每日奖励</option>
+                                        <option value="event_reward">活动奖励</option>
+                                        <option value="compensation">补偿奖励</option>
+                                        <option value="special_gift">特殊礼物</option>
+                                        <option value="vip_gift">VIP礼物</option>
+                                        <option value="anniversary">周年庆礼物</option>
+                                        <option value="custom">自定义礼物</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="sender_name" class="form-label">发送者名称</label>
+                                    <input type="text" class="form-control" id="sender_name" name="sender_name" 
+                                           value="管理员" placeholder="礼物发送者名称">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">消息内容</label>
+                                    <input type="text" class="form-control" id="message" name="message" 
+                                           placeholder="给用户的留言">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h6><i class="fas fa-gift me-2"></i>礼物内容</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="gift_coins" class="form-label">金币</label>
+                                    <input type="number" class="form-control" id="gift_coins" name="gift_coins" 
+                                           min="0" placeholder="金币数量">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="gift_gems" class="form-label">宝石</label>
+                                    <input type="number" class="form-control" id="gift_gems" name="gift_gems" 
+                                           min="0" placeholder="宝石数量">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="gift_items" class="form-label">道具</label>
+                                    <input type="text" class="form-control" id="gift_items" name="gift_items" 
+                                           placeholder="道具ID或名称">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-gift me-1"></i>发送礼物
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>礼物类型说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-calendar-day me-2 text-primary"></i>每日奖励</h6>
+                        <p class="small text-muted mb-2">每日登录奖励或签到奖励</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-trophy me-2 text-warning"></i>活动奖励</h6>
+                        <p class="small text-muted mb-2">参与活动获得的奖励</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-hand-holding-heart me-2 text-success"></i>补偿奖励</h6>
+                        <p class="small text-muted mb-2">系统问题或维护补偿</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-star me-2 text-info"></i>特殊礼物</h6>
+                        <p class="small text-muted mb-2">特殊节日或纪念日礼物</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-crown me-2 text-danger"></i>VIP礼物</h6>
+                        <p class="small text-muted mb-2">VIP用户专属礼物</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-birthday-cake me-2 text-warning"></i>周年庆礼物</h6>
+                        <p class="small text-muted mb-2">游戏周年庆纪念礼物</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-cog me-2 text-secondary"></i>自定义礼物</h6>
+                        <p class="small text-muted mb-2">管理员自定义的礼物</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>使用提示
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>礼物会出现在用户收件箱中</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>可以包含多种类型的奖励</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>支持自定义发送者和消息</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>用户需要手动领取礼物</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>注意事项
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>请确保用户ID正确</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>礼物内容至少包含一种奖励</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>所有操作都会记录在日志中</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>建议在发送前进行测试</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

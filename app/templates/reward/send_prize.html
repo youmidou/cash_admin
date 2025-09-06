@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}发送奖励{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-trophy me-2"></i>发送奖励
+                </h1>
+                <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回奖励管理
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-paper-plane me-2"></i>发送奖励给用户
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="user_id" class="form-label">用户ID <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="user_id" name="user_id" required>
+                                    <div class="form-text">请输入要发送奖励的用户ID</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prize_type" class="form-label">奖励类型 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="prize_type" name="prize_type" required>
+                                        <option value="">请选择奖励类型</option>
+                                        <option value="coins">金币</option>
+                                        <option value="gems">宝石</option>
+                                        <option value="experience">经验值</option>
+                                        <option value="vip_points">VIP积分</option>
+                                        <option value="items">道具</option>
+                                        <option value="boosters">加速器</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="amount" class="form-label">奖励数量 <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="amount" name="amount" min="1" required>
+                                    <div class="form-text">请输入要发送的奖励数量</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="reason" class="form-label">奖励原因</label>
+                                    <input type="text" class="form-control" id="reason" name="reason" 
+                                           value="管理员奖励" placeholder="请输入奖励原因">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-paper-plane me-1"></i>发送奖励
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>奖励类型说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-coins me-2 text-warning"></i>金币</h6>
+                        <p class="small text-muted mb-2">游戏内主要货币，用于下注和购买道具</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-gem me-2 text-primary"></i>宝石</h6>
+                        <p class="small text-muted mb-2">高级货币，用于购买特殊道具和功能</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-star me-2 text-success"></i>经验值</h6>
+                        <p class="small text-muted mb-2">用于提升用户等级，解锁新功能</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-crown me-2 text-danger"></i>VIP积分</h6>
+                        <p class="small text-muted mb-2">用于提升VIP等级，享受更多特权</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-box me-2 text-info"></i>道具</h6>
+                        <p class="small text-muted mb-2">游戏内各种功能道具和装饰品</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-rocket me-2 text-warning"></i>加速器</h6>
+                        <p class="small text-muted mb-2">临时提升游戏体验的加速道具</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>注意事项
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>奖励发送后立即生效</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>所有操作都会记录在系统日志中</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>请确保用户ID正确</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>大量奖励发放前请先测试</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

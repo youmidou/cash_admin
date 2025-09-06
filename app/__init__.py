@@ -27,4 +27,7 @@ def create_app(config_name='default'):
     from app.system import bp as system_bp
     app.register_blueprint(system_bp, url_prefix='/system')
     
+    from app.reward import bp as reward_bp
+    app.register_blueprint(reward_bp, url_prefix='/reward')
+    
     return app

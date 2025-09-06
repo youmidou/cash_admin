@@ -152,6 +152,81 @@ class GameServerAPI:
         """重置系统时间"""
         return self._make_request('POST', '/api/admin/system/reset-time', data={'reset_type': reset_type})
     
+    # ==================== 用户管理 ====================
+    
+    def get_user_server_info(self, user_id):
+        """获取用户服务器信息"""
+        return self._make_request('GET', f'/api/admin/user/{user_id}/server-info')
+    
+    def get_user_theme_info(self, user_id):
+        """获取用户主题信息"""
+        return self._make_request('GET', f'/api/admin/user/{user_id}/theme-info')
+    
+    def set_user_theme_info(self, user_id, theme_data):
+        """设置用户主题信息"""
+        return self._make_request('POST', f'/api/admin/user/{user_id}/theme-info', data=theme_data)
+    
+    def get_user_map(self):
+        """获取用户映射信息"""
+        return self._make_request('GET', '/api/admin/user-map')
+    
+    # ==================== 主题管理 ====================
+    
+    def get_theme_users(self, theme_id):
+        """获取主题用户信息"""
+        return self._make_request('GET', f'/api/admin/theme/{theme_id}/users')
+    
+    def get_theme_config(self, theme_id):
+        """获取主题配置"""
+        return self._make_request('GET', f'/api/admin/theme/{theme_id}/config')
+    
+    def set_theme_config(self, theme_id, config_data):
+        """设置主题配置"""
+        return self._make_request('POST', f'/api/admin/theme/{theme_id}/config', data=config_data)
+    
+    # ==================== 奖励管理 ====================
+    
+    def send_prize(self, user_id, prize_type, amount, reason='管理员奖励'):
+        """发送奖励给用户"""
+        data = {
+            'user_id': user_id,
+            'prize_type': prize_type,
+            'amount': amount,
+            'reason': reason
+        }
+        return self._make_request('POST', '/api/admin/reward/send-prize', data=data)
+    
+    def add_inbox(self, user_id, item_type, item_id=None, quantity=1, title='管理员礼物', description=''):
+        """添加收件箱物品"""
+        data = {
+            'user_id': user_id,
+            'item_type': item_type,
+            'item_id': item_id,
+            'quantity': quantity,
+            'title': title,
+            'description': description
+        }
+        return self._make_request('POST', '/api/admin/reward/add-inbox', data=data)
+    
+    def delete_inbox_gift(self, user_id, gift_id):
+        """删除收件箱礼物"""
+        data = {
+            'user_id': user_id,
+            'gift_id': gift_id
+        }
+        return self._make_request('POST', '/api/admin/reward/delete-inbox-gift', data=data)
+    
+    def send_inbox_gift(self, user_id, gift_type, gift_data=None, sender_name='管理员', message=''):
+        """发送收件箱礼物"""
+        data = {
+            'user_id': user_id,
+            'gift_type': gift_type,
+            'gift_data': gift_data or {},
+            'sender_name': sender_name,
+            'message': message
+        }
+        return self._make_request('POST', '/api/admin/reward/send-inbox-gift', data=data)
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}删除收件箱礼物{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-trash me-2"></i>删除收件箱礼物
+                </h1>
+                <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回奖励管理
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-trash me-2"></i>删除收件箱礼物
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="deleteForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="user_id" class="form-label">用户ID <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="user_id" name="user_id" required>
+                                    <div class="form-text">请输入要删除礼物的用户ID</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="gift_id" class="form-label">礼物ID <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="gift_id" name="gift_id" required>
+                                    <div class="form-text">请输入要删除的礼物ID</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>警告：</strong>删除操作不可恢复，请确认您要删除的礼物ID正确无误。
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-danger" onclick="return confirmDelete()">
+                                <i class="fas fa-trash me-1"></i>确认删除
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>操作说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-user me-2 text-primary"></i>用户ID</h6>
+                        <p class="small text-muted mb-2">要删除礼物的目标用户ID</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-gift me-2 text-warning"></i>礼物ID</h6>
+                        <p class="small text-muted mb-2">收件箱中具体礼物的唯一标识符</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>重要提醒
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>删除操作不可恢复</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>请确认礼物ID正确</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>删除后用户将无法领取该礼物</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <small>操作会记录在系统日志中</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>获取礼物ID
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-2">要获取礼物ID，您可以：</p>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>查看用户收件箱</small>
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>检查系统日志</small>
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>联系技术支持</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete() {
+    const userId = document.getElementById('user_id').value;
+    const giftId = document.getElementById('gift_id').value;
+    
+    if (!userId || !giftId) {
+        alert('请填写用户ID和礼物ID');
+        return false;
+    }
+    
+    return confirm(`确认要删除用户 ${userId} 的礼物 ${giftId} 吗？\n\n此操作不可恢复！`);
+}
+</script>
+{% endblock %}

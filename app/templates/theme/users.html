@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}主题用户信息 - 主题{{ theme_id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-users me-2"></i>主题用户信息
+                </h1>
+                <a href="{{ url_for('theme.theme_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回主题列表
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主题信息卡片 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-palette me-2"></i>主题{{ theme_id }}信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if theme_info %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-primary">{{ theme_id }}</h4>
+                                    <p class="text-muted mb-0">主题ID</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-success">{{ theme_info.get('theme_name', 'N/A') }}</h4>
+                                    <p class="text-muted mb-0">主题名称</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-warning">{{ theme_info.get('theme_type', 'N/A') }}</h4>
+                                    <p class="text-muted mb-0">主题类型</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-info">{{ theme_info.get('level', 'N/A') }}</h4>
+                                    <p class="text-muted mb-0">主题等级</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                            <p>无法获取主题信息</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户统计信息 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-primary">{{ theme_users_data.get('user_count', 0) }}</h4>
+                    <p class="text-muted mb-0">使用该主题的用户数</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-success">{{ theme_users_data.get('users', [])|length }}</h4>
+                    <p class="text-muted mb-0">在线用户数</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-warning">
+                        {% if theme_users_data.get('user_count', 0) > 0 %}
+                            {{ "%.1f"|format((theme_users_data.get('users', [])|length / theme_users_data.get('user_count', 1) * 100)) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </h4>
+                    <p class="text-muted mb-0">在线率</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户列表 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>使用该主题的用户列表
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if theme_users_data and theme_users_data.get('users') %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>用户ID</th>
+                                        <th>用户名</th>
+                                        <th>等级</th>
+                                        <th>VIP等级</th>
+                                        <th>金币</th>
+                                        <th>登录时间</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in theme_users_data.users %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ user.get('user_id', 'N/A') }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ user.get('username', 'N/A') }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ user.get('level', 1) }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">{{ user.get('vip_level', 0) }}</span>
+                                        </td>
+                                        <td>
+                                            {{ "{:,}".format(user.get('coins', 0)) }}
+                                        </td>
+                                        <td>
+                                            {{ user.get('login_time', 'N/A') }}
+                                        </td>
+                                        <td>
+                                            {% if user.get('is_online') %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-circle me-1"></i>在线
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-circle me-1"></i>离线
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ url_for('user.user_detail', user_id=user.get('user_id')) }}" 
+                                                   class="btn btn-sm btn-outline-primary" title="查看详情">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if user.get('is_online') %}
+                                                <a href="{{ url_for('user.user_server_info', user_id=user.get('user_id')) }}" 
+                                                   class="btn btn-sm btn-outline-info" title="服务器信息">
+                                                    <i class="fas fa-server"></i>
+                                                </a>
+                                                <a href="{{ url_for('user.user_theme_info', user_id=user.get('user_id')) }}" 
+                                                   class="btn btn-sm btn-outline-success" title="主题信息">
+                                                    <i class="fas fa-palette"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-users fa-3x mb-3"></i>
+                            <p>暂无用户使用该主题</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速操作 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i>快速操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('theme.theme_detail', theme_id=theme_id) }}" class="btn btn-primary">
+                            <i class="fas fa-info-circle me-1"></i>主题详情
+                        </a>
+                        <a href="{{ url_for('theme.theme_config', theme_id=theme_id) }}" class="btn btn-warning">
+                            <i class="fas fa-cog me-1"></i>主题配置
+                        </a>
+                        <a href="{{ url_for('theme.theme_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-list me-1"></i>主题列表
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

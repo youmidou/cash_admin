@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}奖励管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-gift me-2"></i>奖励管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能卡片 -->
+    <div class="row">
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-trophy fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">发送奖励</h5>
+                    <p class="card-text text-muted">直接发送金币、宝石等奖励给指定用户</p>
+                    <a href="{{ url_for('reward.send_prize') }}" class="btn btn-warning">
+                        <i class="fas fa-paper-plane me-1"></i>发送奖励
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-inbox fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">添加收件箱物品</h5>
+                    <p class="card-text text-muted">向用户收件箱添加物品、道具等</p>
+                    <a href="{{ url_for('reward.add_inbox') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>添加物品
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-trash fa-3x text-danger"></i>
+                    </div>
+                    <h5 class="card-title">删除收件箱礼物</h5>
+                    <p class="card-text text-muted">删除用户收件箱中的指定礼物</p>
+                    <a href="{{ url_for('reward.delete_inbox_gift') }}" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>删除礼物
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-gift fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">发送收件箱礼物</h5>
+                    <p class="card-text text-muted">发送特殊礼物到用户收件箱</p>
+                    <a href="{{ url_for('reward.send_inbox_gift') }}" class="btn btn-success">
+                        <i class="fas fa-gift me-1"></i>发送礼物
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作说明 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>操作说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-trophy me-2"></i>发送奖励</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>直接增加用户金币、宝石等资源</li>
+                                <li><i class="fas fa-check text-success me-2"></i>支持自定义奖励原因</li>
+                                <li><i class="fas fa-check text-success me-2"></i>立即生效，无需用户操作</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-inbox me-2"></i>收件箱管理</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>添加物品到用户收件箱</li>
+                                <li><i class="fas fa-check text-success me-2"></i>发送特殊礼物和消息</li>
+                                <li><i class="fas fa-check text-success me-2"></i>管理收件箱中的礼物</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>注意事项：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>所有奖励操作都会记录在系统日志中</li>
+                            <li>请确保用户ID正确，避免误操作</li>
+                            <li>大量奖励发放前请先进行小规模测试</li>
+                            <li>删除收件箱礼物操作不可恢复，请谨慎操作</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

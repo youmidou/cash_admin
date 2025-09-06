@@ -87,15 +87,20 @@ def theme_config(theme_id):
 def theme_users(theme_id):
     """主题用户统计页面"""
     api = GameServerAPI()
-    theme_info = api.get_theme_detail(theme_id)
     
+    # 获取主题详情
+    theme_info = api.get_theme_detail(theme_id)
     if theme_info.get('error'):
         flash(f'获取主题信息失败: {theme_info["error"]}', 'error')
         return redirect(url_for('theme.theme_list'))
     
-    # 这里可以添加获取主题用户统计的API调用
-    users_data = {'users': [], 'total': 0}  # 占位数据
+    # 获取主题用户信息
+    theme_users_data = api.get_theme_users(theme_id)
+    if theme_users_data.get('error'):
+        flash(f'获取主题用户信息失败: {theme_users_data["error"]}', 'error')
+        return redirect(url_for('theme.theme_list'))
     
     return render_template('theme/users.html', 
-                         theme_info=theme_info, 
-                         users_data=users_data)
+                         theme_id=theme_id,
+                         theme_info=theme_info.get('data', {}),
+                         theme_users_data=theme_users_data.get('data', {}))
