@@ -401,6 +401,40 @@ class GameServerAPI:
         """获取属性默认值"""
         return self._make_request('GET', '/api/admin/property/default')
     
+    # ==================== 任务管理 ====================
+    
+    def get_quest_info(self, uid, quest_id=None):
+        """获取任务信息"""
+        url = f'/api/admin/quest/info?uid={uid}'
+        if quest_id:
+            url += f'&quest_id={quest_id}'
+        return self._make_request('GET', url)
+    
+    def get_quest_rank(self, quest_type='all', limit=50):
+        """获取任务排行榜"""
+        return self._make_request('GET', f'/api/admin/quest/rank?quest_type={quest_type}&limit={limit}')
+    
+    def reset_quest(self, uid, quest_id=None, quest_type='all'):
+        """重置任务"""
+        data = {
+            'uid': uid,
+            'quest_id': quest_id,
+            'quest_type': quest_type
+        }
+        return self._make_request('POST', '/api/admin/quest/reset', data=data)
+    
+    def clean_quest_data(self, clean_type='all', days_old=30):
+        """清理任务数据"""
+        data = {
+            'clean_type': clean_type,
+            'days_old': days_old
+        }
+        return self._make_request('POST', '/api/admin/quest/clean', data=data)
+    
+    def get_quest_default(self):
+        """获取任务默认配置"""
+        return self._make_request('GET', '/api/admin/quest/default')
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')

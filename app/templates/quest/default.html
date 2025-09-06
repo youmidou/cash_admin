@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}任务默认配置{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-file-alt me-2"></i>任务默认配置
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('quest.quest_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回任务管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 任务类型配置 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tags me-2"></i>任务类型配置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for type_key, type_config in default_data.quest_types.items() %}
+                    <div class="row mb-3 p-3 border rounded">
+                        <div class="col-8">
+                            <h6>{{ type_config.name }}</h6>
+                            <p class="text-muted mb-2">{{ type_config.description }}</p>
+                            <div class="row">
+                                <div class="col-6">
+                                    <small><strong>重置时间:</strong> {{ type_config.reset_time }}</small>
+                                </div>
+                                <div class="col-6">
+                                    <small><strong>最大任务数:</strong> {{ type_config.max_quests }}</small>
+                                </div>
+                            </div>
+                            {% if type_config.reset_day %}
+                            <div class="mt-1">
+                                <small><strong>重置日期:</strong> {{ type_config.reset_day }}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-4 text-end">
+                            <div>
+                                <span class="badge bg-{{ 'success' if type_config.enabled else 'danger' }}">
+                                    {{ '启用' if type_config.enabled else '禁用' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务模板配置 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>任务模板配置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for template_key, template_config in default_data.quest_templates.items() %}
+                    <div class="row mb-3 p-3 border rounded">
+                        <div class="col-8">
+                            <h6>{{ template_config.name }}</h6>
+                            <p class="text-muted mb-2">{{ template_config.description }}</p>
+                            <div class="row">
+                                <div class="col-6">
+                                    <small><strong>目标:</strong> {{ template_config.target }}</small>
+                                </div>
+                                <div class="col-6">
+                                    <small><strong>类型:</strong> {{ template_config.type }}</small>
+                                </div>
+                            </div>
+                            <div class="mt-1">
+                                <small><strong>奖励:</strong> 金币{{ template_config.reward.coins }}, 宝石{{ template_config.reward.gems }}</small>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div>
+                                <span class="badge bg-{{ 'success' if template_config.enabled else 'danger' }}">
+                                    {{ '启用' if template_config.enabled else '禁用' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务奖励配置 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-gift me-2"></i>任务奖励配置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>金币倍数:</strong> {{ default_data.quest_rewards.coins_multiplier }}
+                        </div>
+                        <div class="col-6">
+                            <strong>宝石倍数:</strong> {{ default_data.quest_rewards.gems_multiplier }}
+                        </div>
+                    </div>
+                    
+                    <h6>奖励加成</h6>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>完成奖励:</strong><br>
+                            <small>金币: {{ default_data.quest_rewards.bonus_rewards.completion_bonus.coins }}</small><br>
+                            <small>宝石: {{ default_data.quest_rewards.bonus_rewards.completion_bonus.gems }}</small>
+                        </div>
+                        <div class="col-6">
+                            <strong>连击奖励:</strong><br>
+                            <small>金币: {{ default_data.quest_rewards.bonus_rewards.streak_bonus.coins }}</small><br>
+                            <small>宝石: {{ default_data.quest_rewards.bonus_rewards.streak_bonus.gems }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务设置配置 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cog me-2"></i>任务设置配置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>自动重置:</strong>
+                            <span class="badge bg-{{ 'success' if default_data.quest_settings.auto_reset else 'danger' }}">
+                                {{ '启用' if default_data.quest_settings.auto_reset else '禁用' }}
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <strong>重置通知:</strong>
+                            <span class="badge bg-{{ 'success' if default_data.quest_settings.reset_notification else 'danger' }}">
+                                {{ '启用' if default_data.quest_settings.reset_notification else '禁用' }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>进度保存间隔:</strong> {{ default_data.quest_settings.progress_save_interval }}秒
+                        </div>
+                        <div class="col-6">
+                            <strong>最大历史记录:</strong> {{ default_data.quest_settings.max_quest_history }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>清理旧数据:</strong>
+                            <span class="badge bg-{{ 'success' if default_data.quest_settings.cleanup_old_data else 'danger' }}">
+                                {{ '启用' if default_data.quest_settings.cleanup_old_data else '禁用' }}
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <strong>清理天数:</strong> {{ default_data.quest_settings.cleanup_days }}天
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配置信息 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>默认配置说明:</strong>
+                        这是任务系统的默认配置，包含了所有任务类型、模板、奖励和设置的标准配置。
+                        这些配置可以作为创建新任务和系统设置的参考标准。
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('quest.quest_info') }}" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>查询任务信息
+                        </a>
+                        <a href="{{ url_for('quest.quest_rank') }}" class="btn btn-info">
+                            <i class="fas fa-trophy me-1"></i>查看排行榜
+                        </a>
+                        <a href="{{ url_for('quest.reset_quest') }}" class="btn btn-warning">
+                            <i class="fas fa-redo me-1"></i>重置任务
+                        </a>
+                        <a href="{{ url_for('quest.clean_quest_data') }}" class="btn btn-danger">
+                            <i class="fas fa-broom me-1"></i>清理数据
+                        </a>
+                    </div>
+                    
+                    <hr>
+                    
+                    <small class="text-muted">
+                        配置更新时间：{{ default_data.last_updated or '未知' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

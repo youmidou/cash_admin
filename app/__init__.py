@@ -47,5 +47,8 @@ def create_app(config_name='default'):
 
     from app.property import bp as property_bp
     app.register_blueprint(property_bp, url_prefix='/property')
+
+    from app.quest import bp as quest_bp
+    app.register_blueprint(quest_bp, url_prefix='/quest')
     
     return app

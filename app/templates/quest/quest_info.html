@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}任务信息{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-search me-2"></i>任务信息
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('quest.quest_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回任务管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-search me-2"></i>查询任务信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="uid" class="form-label">用户ID</label>
+                            <input type="number" class="form-control" id="uid" name="uid" 
+                                   value="{{ uid or '' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="quest_id" class="form-label">任务ID (可选)</label>
+                            <input type="number" class="form-control" id="quest_id" name="quest_id" 
+                                   value="{{ quest_id or '' }}" placeholder="留空查询所有任务">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>查询任务信息
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            {% if quest_data %}
+            <!-- 任务统计信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>任务统计
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-primary">{{ quest_data.quest_statistics.total_quests }}</h4>
+                                <small class="text-muted">总任务数</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-success">{{ quest_data.quest_statistics.completed_quests }}</h4>
+                                <small class="text-muted">已完成</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-warning">{{ quest_data.quest_statistics.in_progress_quests }}</h4>
+                                <small class="text-muted">进行中</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-info">{{ quest_data.quest_statistics.quest_completion_rate }}%</h4>
+                                <small class="text-muted">完成率</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>已获得奖励:</strong>
+                            <ul class="list-unstyled">
+                                <li>金币: {{ quest_data.quest_statistics.total_rewards_earned.coins }}</li>
+                                <li>宝石: {{ quest_data.quest_statistics.total_rewards_earned.gems }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>最后更新:</strong><br>
+                            <small class="text-muted">{{ quest_data.last_updated }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每日任务 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-day me-2"></i>每日任务
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for quest in quest_data.quest_data.daily_quests %}
+                    <div class="row mb-3 p-3 border rounded">
+                        <div class="col-md-8">
+                            <h6>{{ quest.quest_name }}</h6>
+                            <p class="text-muted mb-2">{{ quest.quest_description }}</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ (quest.quest_progress / quest.quest_target * 100) if quest.quest_target > 0 else 0 }}%">
+                                    {{ quest.quest_progress }}/{{ quest.quest_target }}
+                                </div>
+                            </div>
+                            <small class="text-muted">过期时间: {{ quest.quest_expire_time }}</small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="mb-2">
+                                <span class="badge bg-{{ 'success' if quest.quest_status == 'completed' else 'warning' }}">
+                                    {{ '已完成' if quest.quest_status == 'completed' else '进行中' }}
+                                </span>
+                            </div>
+                            <div>
+                                <strong>奖励:</strong><br>
+                                <small>金币: {{ quest.quest_reward.coins }}</small><br>
+                                <small>宝石: {{ quest.quest_reward.gems }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 每周任务 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-week me-2"></i>每周任务
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for quest in quest_data.quest_data.weekly_quests %}
+                    <div class="row mb-3 p-3 border rounded">
+                        <div class="col-md-8">
+                            <h6>{{ quest.quest_name }}</h6>
+                            <p class="text-muted mb-2">{{ quest.quest_description }}</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ (quest.quest_progress / quest.quest_target * 100) if quest.quest_target > 0 else 0 }}%">
+                                    {{ quest.quest_progress }}/{{ quest.quest_target }}
+                                </div>
+                            </div>
+                            <small class="text-muted">过期时间: {{ quest.quest_expire_time }}</small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="mb-2">
+                                <span class="badge bg-{{ 'success' if quest.quest_status == 'completed' else 'warning' }}">
+                                    {{ '已完成' if quest.quest_status == 'completed' else '进行中' }}
+                                </span>
+                            </div>
+                            <div>
+                                <strong>奖励:</strong><br>
+                                <small>金币: {{ quest.quest_reward.coins }}</small><br>
+                                <small>宝石: {{ quest.quest_reward.gems }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 特殊任务 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star me-2"></i>特殊任务
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for quest in quest_data.quest_data.special_quests %}
+                    <div class="row mb-3 p-3 border rounded">
+                        <div class="col-md-8">
+                            <h6>{{ quest.quest_name }}</h6>
+                            <p class="text-muted mb-2">{{ quest.quest_description }}</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ (quest.quest_progress / quest.quest_target * 100) if quest.quest_target > 0 else 0 }}%">
+                                    {{ quest.quest_progress }}/{{ quest.quest_target }}
+                                </div>
+                            </div>
+                            <small class="text-muted">过期时间: {{ quest.quest_expire_time }}</small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="mb-2">
+                                <span class="badge bg-{{ 'success' if quest.quest_status == 'completed' else 'warning' }}">
+                                    {{ '已完成' if quest.quest_status == 'completed' else '进行中' }}
+                                </span>
+                            </div>
+                            <div>
+                                <strong>奖励:</strong><br>
+                                <small>金币: {{ quest.quest_reward.coins }}</small><br>
+                                <small>宝石: {{ quest.quest_reward.gems }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

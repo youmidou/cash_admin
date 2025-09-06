@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}任务管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-tasks me-2"></i>任务管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 任务功能选择 -->
+    <div class="row">
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-search fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">任务信息</h5>
+                    <p class="card-text text-muted">查询指定用户的任务信息和进度</p>
+                    <a href="{{ url_for('quest.quest_info') }}" class="btn btn-primary">
+                        <i class="fas fa-eye me-1"></i>查看任务信息
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-trophy fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">任务排行榜</h5>
+                    <p class="card-text text-muted">查看任务完成排行榜和统计信息</p>
+                    <a href="{{ url_for('quest.quest_rank') }}" class="btn btn-warning">
+                        <i class="fas fa-chart-line me-1"></i>查看排行榜
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-redo fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">重置任务</h5>
+                    <p class="card-text text-muted">重置指定用户的任务进度</p>
+                    <a href="{{ url_for('quest.reset_quest') }}" class="btn btn-success">
+                        <i class="fas fa-undo me-1"></i>重置任务
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-broom fa-3x text-danger"></i>
+                    </div>
+                    <h5 class="card-title">清理数据</h5>
+                    <p class="card-text text-muted">清理过期的任务数据和记录</p>
+                    <a href="{{ url_for('quest.clean_quest_data') }}" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>清理数据
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 任务管理说明 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>任务管理说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6><i class="fas fa-search me-2"></i>任务信息</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>查看用户任务进度</li>
+                                <li><i class="fas fa-check text-success me-2"></i>每日任务状态</li>
+                                <li><i class="fas fa-check text-success me-2"></i>每周任务状态</li>
+                                <li><i class="fas fa-check text-success me-2"></i>特殊任务状态</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6><i class="fas fa-trophy me-2"></i>任务排行榜</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>任务完成排行榜</li>
+                                <li><i class="fas fa-check text-success me-2"></i>完成率统计</li>
+                                <li><i class="fas fa-check text-success me-2"></i>任务类型分布</li>
+                                <li><i class="fas fa-check text-success me-2"></i>玩家活跃度</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6><i class="fas fa-redo me-2"></i>重置任务</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>重置单个任务</li>
+                                <li><i class="fas fa-check text-success me-2"></i>重置任务类型</li>
+                                <li><i class="fas fa-check text-success me-2"></i>重置所有任务</li>
+                                <li><i class="fas fa-check text-success me-2"></i>任务进度清零</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6><i class="fas fa-broom me-2"></i>清理数据</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>清理过期任务</li>
+                                <li><i class="fas fa-check text-success me-2"></i>清理历史记录</li>
+                                <li><i class="fas fa-check text-success me-2"></i>清理统计数据</li>
+                                <li><i class="fas fa-check text-success me-2"></i>优化数据库</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>使用提示：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>任务系统可以增加用户粘性和游戏乐趣</li>
+                            <li>定期查看任务排行榜了解用户活跃度</li>
+                            <li>重置任务功能可以解决任务卡住的问题</li>
+                            <li>定期清理过期数据可以优化系统性能</li>
+                            <li>所有任务操作都会记录在系统日志中</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
