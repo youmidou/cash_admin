@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}设置属性值{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-edit me-2"></i>设置属性值
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('property.property_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回属性管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-edit me-2"></i>设置属性值
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="uid" class="form-label">用户ID</label>
+                            <input type="number" class="form-control" id="uid" name="uid" 
+                                   value="{{ request.args.get('uid', '') }}" required>
+                            <div class="form-text">输入要修改属性的用户ID</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="key" class="form-label">属性键</label>
+                            <input type="text" class="form-control" id="key" name="key" 
+                                   value="{{ request.args.get('key', '') }}" placeholder="例如: coins, level, stamp.stars_ts" required>
+                            <div class="form-text">输入要修改的属性键名</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="value" class="form-label">属性值</label>
+                            <textarea class="form-control" id="value" name="value" rows="3" 
+                                      placeholder="输入新的属性值">{{ request.args.get('value', '') }}</textarea>
+                            <div class="form-text">
+                                支持多种数据类型：
+                                <ul class="mb-0 mt-1">
+                                    <li><strong>数字:</strong> 123, 456.78</li>
+                                    <li><strong>字符串:</strong> "hello world"</li>
+                                    <li><strong>布尔值:</strong> true, false</li>
+                                    <li><strong>JSON:</strong> {"key": "value"}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>警告:</strong> 修改用户属性值可能会影响游戏平衡，请谨慎操作！
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>设置属性值
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>属性类型说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>基本属性</h6>
+                    <ul class="list-unstyled small">
+                        <li><code>coins</code> - 整数，用户金币数量</li>
+                        <li><code>level</code> - 整数，用户等级</li>
+                        <li><code>vip_level</code> - 整数，VIP等级</li>
+                        <li><code>facebook_name</code> - 字符串，Facebook用户名</li>
+                        <li><code>facebook_id</code> - 字符串，Facebook用户ID</li>
+                    </ul>
+                    
+                    <h6>时间属性</h6>
+                    <ul class="list-unstyled small">
+                        <li><code>first_login</code> - 字符串，首次登录时间</li>
+                        <li><code>last_login</code> - 字符串，最后登录时间</li>
+                        <li><code>last_logout</code> - 字符串，最后登出时间</li>
+                        <li><code>last_purchase</code> - 字符串，最后购买时间</li>
+                        <li><code>lounge_ts</code> - 整数，休息室时间戳</li>
+                    </ul>
+                    
+                    <h6>邮票属性</h6>
+                    <ul class="list-unstyled small">
+                        <li><code>stamp.stars_ts</code> - 整数，邮票星星时间戳</li>
+                        <li><code>stamp.disconnection</code> - JSON字符串，断开连接数据</li>
+                        <li><code>stamp.blazing_spin_count</code> - 整数，炽热旋转次数</li>
+                        <li><code>stamp.last_blazing_num</code> - 整数，最后炽热数字</li>
+                        <li><code>stamp.starter_kit_data</code> - JSON字符串，新手礼包数据</li>
+                        <li><code>stamp.season_collected_data</code> - JSON字符串，赛季收集数据</li>
+                        <li><code>stamp.collected_data</code> - JSON字符串，收集数据</li>
+                        <li><code>stamp.albums_data</code> - JSON字符串，相册数据</li>
+                    </ul>
+                    
+                    <h6>游戏系统</h6>
+                    <ul class="list-unstyled small">
+                        <li><code>flame_challenge</code> - 整数，火焰挑战</li>
+                        <li><code>mission_pass</code> - 整数，任务通行证</li>
+                        <li><code>game_king</code> - 整数，游戏之王</li>
+                        <li><code>fever_vault</code> - 整数，狂热宝库</li>
+                        <li><code>hero_album</code> - 整数，英雄相册</li>
+                        <li><code>persona</code> - JSON字符串，角色数据</li>
+                        <li><code>activity</code> - 整数，活动数据</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

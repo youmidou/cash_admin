@@ -42,4 +42,10 @@ def create_app(config_name='default'):
     from app.broadcast import bp as broadcast_bp
     app.register_blueprint(broadcast_bp, url_prefix='/broadcast')
     
+    from app.stamps import bp as stamps_bp
+    app.register_blueprint(stamps_bp, url_prefix='/stamps')
+
+    from app.property import bp as property_bp
+    app.register_blueprint(property_bp, url_prefix='/property')
+    
     return app

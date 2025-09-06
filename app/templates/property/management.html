@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}属性管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-cogs me-2"></i>属性管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 属性功能选择 -->
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-search fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">获取属性值</h5>
+                    <p class="card-text text-muted">查询指定用户的特定属性值</p>
+                    <a href="{{ url_for('property.get_property') }}" class="btn btn-primary">
+                        <i class="fas fa-eye me-1"></i>获取属性值
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-edit fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">设置属性值</h5>
+                    <p class="card-text text-muted">修改指定用户的特定属性值</p>
+                    <a href="{{ url_for('property.set_property') }}" class="btn btn-success">
+                        <i class="fas fa-pencil-alt me-1"></i>设置属性值
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-file-alt fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">默认属性值</h5>
+                    <p class="card-text text-muted">查看所有属性的默认值配置</p>
+                    <a href="{{ url_for('property.property_default') }}" class="btn btn-warning">
+                        <i class="fas fa-list me-1"></i>查看默认值
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 属性管理说明 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>属性管理说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-search me-2"></i>获取属性值</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>查询用户基本属性</li>
+                                <li><i class="fas fa-check text-success me-2"></i>查看邮票相关属性</li>
+                                <li><i class="fas fa-check text-success me-2"></i>检查游戏系统属性</li>
+                                <li><i class="fas fa-check text-success me-2"></i>获取活动数据属性</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-edit me-2"></i>设置属性值</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>修改用户金币数量</li>
+                                <li><i class="fas fa-check text-success me-2"></i>调整用户等级和VIP</li>
+                                <li><i class="fas fa-check text-success me-2"></i>更新邮票收集数据</li>
+                                <li><i class="fas fa-check text-success me-2"></i>设置游戏系统参数</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-file-alt me-2"></i>默认属性值</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>查看所有属性默认值</li>
+                                <li><i class="fas fa-check text-success me-2"></i>快速重置属性</li>
+                                <li><i class="fas fa-check text-success me-2"></i>配置参考标准</li>
+                                <li><i class="fas fa-check text-success me-2"></i>错误恢复机制</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>使用提示：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>属性管理可以精确控制用户的游戏数据</li>
+                            <li>支持多种数据类型：数字、字符串、布尔值、JSON</li>
+                            <li>修改属性前请确认用户ID和属性键的正确性</li>
+                            <li>所有属性修改都会记录在系统日志中</li>
+                            <li>可以使用默认值快速恢复错误的属性设置</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

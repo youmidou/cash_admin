@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}属性默认值{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-file-alt me-2"></i>属性默认值
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('property.property_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回属性管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 用户基本属性 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user me-2"></i>用户基本属性
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>属性键</th>
+                                    <th>默认值</th>
+                                    <th>描述</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in default_data.user_basic.items() %}
+                                <tr>
+                                    <td><code>{{ key }}</code></td>
+                                    <td>
+                                        {% if value is string and value == '' %}
+                                            <span class="text-muted">空字符串</span>
+                                        {% elif value is boolean %}
+                                            <span class="badge bg-{{ 'success' if value else 'danger' }}">
+                                                {{ '是' if value else '否' }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ value }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ default_data.property_descriptions.get(key, '无描述') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="setDefaultValue('{{ key }}', '{{ value }}')">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户角色属性 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-id-card me-2"></i>用户角色属性
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>属性键</th>
+                                    <th>默认值</th>
+                                    <th>描述</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in default_data.user_persona.items() %}
+                                <tr>
+                                    <td><code>{{ key }}</code></td>
+                                    <td><span class="badge bg-info">{{ value }}</span></td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ default_data.property_descriptions.get(key, '无描述') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="setDefaultValue('{{ key }}', '{{ value }}')">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 邮票属性 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-stamp me-2"></i>邮票属性
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>属性键</th>
+                                    <th>默认值</th>
+                                    <th>描述</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in default_data.stamp_properties.items() %}
+                                <tr>
+                                    <td><code>{{ key }}</code></td>
+                                    <td>
+                                        {% if value is string and value.startswith('{') %}
+                                            <span class="badge bg-secondary">JSON</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ value }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ default_data.property_descriptions.get(key, '无描述') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="setDefaultValue('{{ key }}', '{{ value }}')">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏系统属性 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-gamepad me-2"></i>游戏系统属性
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>属性键</th>
+                                    <th>默认值</th>
+                                    <th>描述</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in default_data.game_systems.items() %}
+                                <tr>
+                                    <td><code>{{ key }}</code></td>
+                                    <td>
+                                        {% if value is string and value.startswith('{') %}
+                                            <span class="badge bg-secondary">JSON</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ value }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ default_data.property_descriptions.get(key, '无描述') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="setDefaultValue('{{ key }}', '{{ value }}')">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速重置区域 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-undo me-2"></i>快速重置属性
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>默认值说明:</strong>
+                        这是所有属性的默认值配置，当您需要恢复属性或参考原始设置时可以使用。
+                        点击"重置"按钮可以将指定用户的属性重置为对应的默认值。
+                    </div>
+                    
+                    <form id="resetForm" method="POST" action="{{ url_for('property.set_property_default') }}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="reset_uid" class="form-label">用户ID</label>
+                                <input type="number" class="form-control" id="reset_uid" name="uid" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="reset_key" class="form-label">属性键</label>
+                                <input type="text" class="form-control" id="reset_key" name="key" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-warning d-block">
+                                    <i class="fas fa-undo me-1"></i>重置为默认值
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <hr>
+                    
+                    <small class="text-muted">
+                        配置更新时间：{{ default_data.last_updated or '未知' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setDefaultValue(key, value) {
+    document.getElementById('reset_key').value = key;
+    // 聚焦到用户ID输入框
+    document.getElementById('reset_uid').focus();
+}
+</script>
+{% endblock %}

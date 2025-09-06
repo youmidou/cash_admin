@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}获取属性值{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-search me-2"></i>获取属性值
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('property.property_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回属性管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-search me-2"></i>查询属性值
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="uid" class="form-label">用户ID</label>
+                            <input type="number" class="form-control" id="uid" name="uid" 
+                                   value="{{ uid or '' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="key" class="form-label">属性键</label>
+                            <input type="text" class="form-control" id="key" name="key" 
+                                   value="{{ key or '' }}" placeholder="例如: coins, level, stamp.stars_ts" required>
+                            <div class="form-text">
+                                支持基本属性（coins, level, vip_level）和复合属性（stamp.stars_ts, flame_challenge等）
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>获取属性值
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>常用属性键
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>基本属性</h6>
+                            <ul class="list-unstyled small">
+                                <li><code>coins</code> - 用户金币</li>
+                                <li><code>level</code> - 用户等级</li>
+                                <li><code>vip_level</code> - VIP等级</li>
+                                <li><code>facebook_name</code> - Facebook用户名</li>
+                                <li><code>facebook_id</code> - Facebook用户ID</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>时间属性</h6>
+                            <ul class="list-unstyled small">
+                                <li><code>first_login</code> - 首次登录</li>
+                                <li><code>last_login</code> - 最后登录</li>
+                                <li><code>last_logout</code> - 最后登出</li>
+                                <li><code>last_purchase</code> - 最后购买</li>
+                                <li><code>lounge_ts</code> - 休息室时间戳</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>邮票属性</h6>
+                            <ul class="list-unstyled small">
+                                <li><code>stamp.stars_ts</code> - 邮票星星时间戳</li>
+                                <li><code>stamp.disconnection</code> - 断开连接数据</li>
+                                <li><code>stamp.blazing_spin_count</code> - 炽热旋转次数</li>
+                                <li><code>stamp.last_blazing_num</code> - 最后炽热数字</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>游戏系统</h6>
+                            <ul class="list-unstyled small">
+                                <li><code>flame_challenge</code> - 火焰挑战</li>
+                                <li><code>mission_pass</code> - 任务通行证</li>
+                                <li><code>game_king</code> - 游戏之王</li>
+                                <li><code>fever_vault</code> - 狂热宝库</li>
+                                <li><code>hero_album</code> - 英雄相册</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if property_data %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>属性值结果
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>用户ID:</strong><br>
+                            <span class="badge bg-primary">{{ property_data.uid }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>属性键:</strong><br>
+                            <code>{{ property_data.key }}</code>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>属性值:</strong><br>
+                            <span class="badge bg-success">{{ property_data.value }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>查询时间:</strong><br>
+                            <small class="text-muted">{{ property_data.timestamp }}</small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('property.set_property') }}?uid={{ property_data.uid }}&key={{ property_data.key }}&value={{ property_data.value }}" 
+                           class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i>修改此属性
+                        </a>
+                        <button class="btn btn-info" onclick="copyToClipboard('{{ property_data.value }}')">
+                            <i class="fas fa-copy me-1"></i>复制值
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('属性值已复制到剪贴板');
+    }, function(err) {
+        console.error('复制失败: ', err);
+    });
+}
+</script>
+{% endblock %}

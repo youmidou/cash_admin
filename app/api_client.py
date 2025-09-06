@@ -368,6 +368,39 @@ class GameServerAPI:
         """获取广播历史记录"""
         return self._make_request('GET', f'/api/admin/broadcast/history?page={page}&limit={limit}')
     
+    # ==================== 邮票管理 ====================
+    
+    def get_stamps_config(self):
+        """获取邮票配置"""
+        return self._make_request('GET', '/api/admin/stamps/config')
+    
+    def set_stamps_config(self, config_data):
+        """设置邮票配置"""
+        return self._make_request('POST', '/api/admin/stamps/config', data=config_data)
+    
+    def get_stamps_default_config(self):
+        """获取邮票默认配置"""
+        return self._make_request('GET', '/api/admin/stamps/config/default')
+    
+    # ==================== 属性管理 ====================
+    
+    def get_property_value(self, uid, key):
+        """获取属性值"""
+        return self._make_request('GET', f'/api/admin/property/value?uid={uid}&key={key}')
+    
+    def set_property_value(self, uid, key, value):
+        """设置属性值"""
+        data = {
+            'uid': uid,
+            'key': key,
+            'value': value
+        }
+        return self._make_request('POST', '/api/admin/property/value', data=data)
+    
+    def get_property_default(self):
+        """获取属性默认值"""
+        return self._make_request('GET', '/api/admin/property/default')
+    
     def health_check(self):
         """健康检查"""
         return self._make_request('GET', '/health')

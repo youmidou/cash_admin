@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}邮票管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-stamp me-2"></i>邮票管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 邮票功能选择 -->
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-cog fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">邮票配置</h5>
+                    <p class="card-text text-muted">管理邮票类型、收集系统、奖励机制等配置设置</p>
+                    <a href="{{ url_for('stamps.stamps_config') }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>配置邮票设置
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-undo fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">默认配置</h5>
+                    <p class="card-text text-muted">查看邮票系统的默认配置，用于参考和恢复</p>
+                    <a href="{{ url_for('stamps.stamps_default_config') }}" class="btn btn-warning">
+                        <i class="fas fa-file-alt me-1"></i>查看默认配置
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-history fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">配置历史</h5>
+                    <p class="card-text text-muted">查看邮票配置的修改历史和版本记录</p>
+                    <button class="btn btn-info" disabled>
+                        <i class="fas fa-clock me-1"></i>即将推出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 邮票说明 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>邮票管理说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-cog me-2"></i>邮票配置</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>邮票类型管理</li>
+                                <li><i class="fas fa-check text-success me-2"></i>收集系统配置</li>
+                                <li><i class="fas fa-check text-success me-2"></i>奖励机制设置</li>
+                                <li><i class="fas fa-check text-success me-2"></i>兑换规则管理</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-undo me-2"></i>默认配置</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>查看默认配置</li>
+                                <li><i class="fas fa-check text-success me-2"></i>快速恢复功能</li>
+                                <li><i class="fas fa-check text-success me-2"></i>配置参考标准</li>
+                                <li><i class="fas fa-check text-success me-2"></i>错误回滚机制</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>使用提示：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>邮票系统可以增加用户粘性和游戏乐趣</li>
+                            <li>建议设置合理的邮票稀有度和价值</li>
+                            <li>配置出错时可以快速恢复到默认配置</li>
+                            <li>所有配置更改都会记录在系统日志中</li>
+                            <li>默认配置提供了标准的邮票系统设置</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
