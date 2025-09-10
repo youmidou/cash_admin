@@ -7,12 +7,12 @@ class GameServerAPI:
         # 从配置中获取服务器设置
         if current_app:
             self.host = current_app.config.get('GAME_SERVER_HOST', 'localhost')
-            self.port = current_app.config.get('GAME_SERVER_PORT', 5000)
+            self.port = current_app.config.get('GAME_SERVER_PORT', 5001)
             self.admin_key = current_app.config.get('GAME_SERVER_ADMIN_KEY', 'admin_key_20250906')
         else:
             # 默认配置
             self.host = 'localhost'
-            self.port = 5000
+            self.port = 5001
             self.admin_key = 'admin_key_20250906'
         
         self.base_url = f"http://{self.host}:{self.port}"
