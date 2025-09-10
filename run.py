@@ -17,7 +17,7 @@ def main():
     
     # 获取配置
     host = os.environ.get('HOST', '0.0.0.0')
-    port = int(os.environ.get('PORT', 5001))
+    port = int(os.environ.get('PORT', 5002))
     debug = os.environ.get('FLASK_ENV') == 'development'
     
     print(f"""

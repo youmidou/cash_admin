@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}概览报表{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>概览报表
+                </h1>
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="dateRangeSelect" onchange="changeDateRange()">
+                        <option value="today" {% if date_range == 'today' %}selected{% endif %}>今天</option>
+                        <option value="week" {% if date_range == 'week' %}selected{% endif %}>本周</option>
+                        <option value="month" {% if date_range == 'month' %}selected{% endif %}>本月</option>
+                        <option value="quarter" {% if date_range == 'quarter' %}selected{% endif %}>本季度</option>
+                        <option value="year" {% if date_range == 'year' %}selected{% endif %}>本年</option>
+                    </select>
+                    <a href="{{ url_for('report.report_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回报表管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关键指标 -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">总用户数</h5>
+                    <h2 class="text-primary">{{ "{:,}".format(report_data.summary.total_users) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-success">活跃用户</h5>
+                    <h2 class="text-success">{{ "{:,}".format(report_data.summary.active_users) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">总收入</h5>
+                    <h2 class="text-warning">{{ "{:,}".format(report_data.summary.total_revenue) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-info">总利润</h5>
+                    <h2 class="text-info">{{ "{:,}".format(report_data.summary.total_profit) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">总交易数</h5>
+                    <h2 class="text-danger">{{ "{:,}".format(report_data.summary.total_transactions) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">平均会话时长</h5>
+                    <h2 class="text-secondary">{{ report_data.summary.average_session_time }}分钟</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 趋势图表 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users me-2"></i>用户增长趋势
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userGrowthChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-dollar-sign me-2"></i>收入增长趋势
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueGrowthChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>利润增长趋势
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="profitGrowthChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 热门主题 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-trophy me-2"></i>热门主题排行
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>主题ID</th>
+                                    <th>主题名称</th>
+                                    <th>收入</th>
+                                    <th>用户数</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for theme in report_data.top_themes %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-{% if loop.index == 1 %}warning{% elif loop.index == 2 %}secondary{% elif loop.index == 3 %}success{% else %}primary{% endif %}">
+                                            {{ loop.index }}
+                                        </span>
+                                    </td>
+                                    <td>{{ theme.theme_id }}</td>
+                                    <td>{{ theme.name }}</td>
+                                    <td>{{ "{:,}".format(theme.revenue) }}</td>
+                                    <td>{{ "{:,}".format(theme.users) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('report.theme_report', theme_id=theme.theme_id, date_range=date_range) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> 查看详情
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报表信息 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary" onclick="refreshReport()">
+                            <i class="fas fa-sync me-1"></i>刷新数据
+                        </button>
+                        <button class="btn btn-success" onclick="exportReport()">
+                            <i class="fas fa-download me-1"></i>导出报表
+                        </button>
+                        <button class="btn btn-info" onclick="printReport()">
+                            <i class="fas fa-print me-1"></i>打印报表
+                        </button>
+                    </div>
+                    <hr>
+                    <small class="text-muted">
+                        报表生成时间：{{ report_data.generated_time }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// 用户增长趋势图
+const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+new Chart(userGrowthCtx, {
+    type: 'line',
+    data: {
+        labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        datasets: [{
+            label: '用户增长',
+            data: {{ report_data.trends.user_growth | tojson }},
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// 收入增长趋势图
+const revenueGrowthCtx = document.getElementById('revenueGrowthChart').getContext('2d');
+new Chart(revenueGrowthCtx, {
+    type: 'line',
+    data: {
+        labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        datasets: [{
+            label: '收入增长',
+            data: {{ report_data.trends.revenue_growth | tojson }},
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// 利润增长趋势图
+const profitGrowthCtx = document.getElementById('profitGrowthChart').getContext('2d');
+new Chart(profitGrowthCtx, {
+    type: 'line',
+    data: {
+        labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        datasets: [{
+            label: '利润增长',
+            data: {{ report_data.trends.profit_growth | tojson }},
+            borderColor: 'rgb(54, 162, 235)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function changeDateRange() {
+    const dateRange = document.getElementById('dateRangeSelect').value;
+    window.location.href = `{{ url_for('report.overview_report') }}?date_range=${dateRange}`;
+}
+
+function refreshReport() {
+    window.location.reload();
+}
+
+function exportReport() {
+    alert('导出功能即将推出');
+}
+
+function printReport() {
+    window.print();
+}
+</script>
+{% endblock %}
+

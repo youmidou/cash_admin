@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}邮票配置{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-cog me-2"></i>邮票配置
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('stamps.stamps_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回邮票管理
+                    </a>
+                    <button class="btn btn-warning" onclick="resetToDefault()">
+                        <i class="fas fa-undo me-1"></i>恢复默认配置
+                    </button>
+                    <button class="btn btn-primary" onclick="saveConfig()">
+                        <i class="fas fa-save me-1"></i>保存配置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="stampsConfigForm" method="POST" action="{{ url_for('stamps.update_stamps_config') }}">
+        <div class="row">
+            <!-- 邮票系统配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-stamp me-2"></i>邮票系统配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="stamp_system_enabled" 
+                                   name="stamp_system_enabled" {% if config_data.stamp_system.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="stamp_system_enabled">
+                                启用邮票系统
+                            </label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="max_stamps_per_user" class="form-label">每用户最大邮票数</label>
+                                <input type="number" class="form-control" id="max_stamps_per_user" 
+                                       name="max_stamps_per_user" value="{{ config_data.stamp_system.max_stamps_per_user or 1000 }}" min="1" max="10000">
+                            </div>
+                            <div class="col-6">
+                                <label for="stamp_expire_days" class="form-label">邮票过期天数</label>
+                                <input type="number" class="form-control" id="stamp_expire_days" 
+                                       name="stamp_expire_days" value="{{ config_data.stamp_system.stamp_expire_days or 30 }}" min="1" max="365">
+                            </div>
+                        </div>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="auto_cleanup_enabled" 
+                                   name="auto_cleanup_enabled" {% if config_data.stamp_system.auto_cleanup_enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="auto_cleanup_enabled">
+                                启用自动清理
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="cleanup_interval_hours" class="form-label">清理间隔(小时)</label>
+                            <input type="number" class="form-control" id="cleanup_interval_hours" 
+                                   name="cleanup_interval_hours" value="{{ config_data.stamp_system.cleanup_interval_hours or 24 }}" min="1" max="168">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 邮票类型配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-tags me-2"></i>邮票类型配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>普通邮票</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control mb-2" name="stamp_type_1_name" 
+                                       value="{{ config_data.stamp_types[0].name if config_data.stamp_types else '普通邮票' }}" placeholder="邮票名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control mb-2" name="stamp_type_1_value" 
+                                       value="{{ config_data.stamp_types[0].value if config_data.stamp_types else 1 }}" placeholder="价值" min="1">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <input type="text" class="form-control mb-2" name="stamp_type_1_description" 
+                                       value="{{ config_data.stamp_types[0].description if config_data.stamp_types else '基础邮票，用于日常收集' }}" placeholder="描述">
+                            </div>
+                            <div class="col-4">
+                                <input type="color" class="form-control mb-2" name="stamp_type_1_color" 
+                                       value="{{ config_data.stamp_types[0].color if config_data.stamp_types else '#4CAF50' }}">
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="stamp_type_1_enabled" 
+                                   {% if config_data.stamp_types[0].enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用普通邮票</label>
+                        </div>
+                        
+                        <h6>稀有邮票</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control mb-2" name="stamp_type_2_name" 
+                                       value="{{ config_data.stamp_types[1].name if config_data.stamp_types|length > 1 else '稀有邮票' }}" placeholder="邮票名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control mb-2" name="stamp_type_2_value" 
+                                       value="{{ config_data.stamp_types[1].value if config_data.stamp_types|length > 1 else 5 }}" placeholder="价值" min="1">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <input type="text" class="form-control mb-2" name="stamp_type_2_description" 
+                                       value="{{ config_data.stamp_types[1].description if config_data.stamp_types|length > 1 else '稀有邮票，价值较高' }}" placeholder="描述">
+                            </div>
+                            <div class="col-4">
+                                <input type="color" class="form-control mb-2" name="stamp_type_2_color" 
+                                       value="{{ config_data.stamp_types[1].color if config_data.stamp_types|length > 1 else '#2196F3' }}">
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="stamp_type_2_enabled" 
+                                   {% if config_data.stamp_types[1].enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用稀有邮票</label>
+                        </div>
+                        
+                        <h6>史诗邮票</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control mb-2" name="stamp_type_3_name" 
+                                       value="{{ config_data.stamp_types[2].name if config_data.stamp_types|length > 2 else '史诗邮票' }}" placeholder="邮票名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control mb-2" name="stamp_type_3_value" 
+                                       value="{{ config_data.stamp_types[2].value if config_data.stamp_types|length > 2 else 15 }}" placeholder="价值" min="1">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <input type="text" class="form-control mb-2" name="stamp_type_3_description" 
+                                       value="{{ config_data.stamp_types[2].description if config_data.stamp_types|length > 2 else '史诗邮票，非常珍贵' }}" placeholder="描述">
+                            </div>
+                            <div class="col-4">
+                                <input type="color" class="form-control mb-2" name="stamp_type_3_color" 
+                                       value="{{ config_data.stamp_types[2].color if config_data.stamp_types|length > 2 else '#9C27B0' }}">
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="stamp_type_3_enabled" 
+                                   {% if config_data.stamp_types[2].enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用史诗邮票</label>
+                        </div>
+                        
+                        <h6>传说邮票</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="text" class="form-control mb-2" name="stamp_type_4_name" 
+                                       value="{{ config_data.stamp_types[3].name if config_data.stamp_types|length > 3 else '传说邮票' }}" placeholder="邮票名称">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control mb-2" name="stamp_type_4_value" 
+                                       value="{{ config_data.stamp_types[3].value if config_data.stamp_types|length > 3 else 50 }}" placeholder="价值" min="1">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <input type="text" class="form-control mb-2" name="stamp_type_4_description" 
+                                       value="{{ config_data.stamp_types[3].description if config_data.stamp_types|length > 3 else '传说邮票，极其稀有' }}" placeholder="描述">
+                            </div>
+                            <div class="col-4">
+                                <input type="color" class="form-control mb-2" name="stamp_type_4_color" 
+                                       value="{{ config_data.stamp_types[3].color if config_data.stamp_types|length > 3 else '#FF9800' }}">
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="stamp_type_4_enabled" 
+                                   {% if config_data.stamp_types[3].enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用传说邮票</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 邮票奖励配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-gift me-2"></i>邮票奖励配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>每日登录奖励</h6>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="daily_login_enabled" 
+                                   {% if config_data.stamp_rewards.daily_login.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用每日登录奖励</label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <label class="form-label">普通邮票</label>
+                                <input type="number" class="form-control mb-1" name="daily_login_type_1_count" 
+                                       value="{{ config_data.stamp_rewards.daily_login.stamps[0].count if config_data.stamp_rewards.daily_login.stamps else 1 }}" min="0">
+                                <input type="number" class="form-control" name="daily_login_type_1_prob" 
+                                       value="{{ config_data.stamp_rewards.daily_login.stamps[0].probability if config_data.stamp_rewards.daily_login.stamps else 0.6 }}" 
+                                       step="0.1" min="0" max="1">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label">稀有邮票</label>
+                                <input type="number" class="form-control mb-1" name="daily_login_type_2_count" 
+                                       value="{{ config_data.stamp_rewards.daily_login.stamps[1].count if config_data.stamp_rewards.daily_login.stamps|length > 1 else 1 }}" min="0">
+                                <input type="number" class="form-control" name="daily_login_type_2_prob" 
+                                       value="{{ config_data.stamp_rewards.daily_login.stamps[1].probability if config_data.stamp_rewards.daily_login.stamps|length > 1 else 0.3 }}" 
+                                       step="0.1" min="0" max="1">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label">史诗邮票</label>
+                                <input type="number" class="form-control mb-1" name="daily_login_type_3_count" 
+                                       value="{{ config_data.stamp_rewards.daily_login.stamps[2].count if config_data.stamp_rewards.daily_login.stamps|length > 2 else 1 }}" min="0">
+                                <input type="number" class="form-control" name="daily_login_type_3_prob" 
+                                       value="{{ config_data.stamp_rewards.daily_login.stamps[2].probability if config_data.stamp_rewards.daily_login.stamps|length > 2 else 0.1 }}" 
+                                       step="0.1" min="0" max="1">
+                            </div>
+                        </div>
+                        
+                        <h6>游戏奖励</h6>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="game_play_enabled" 
+                                   {% if config_data.stamp_rewards.game_play.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用游戏奖励</label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="stamps_per_spin" class="form-label">每次旋转邮票数</label>
+                                <input type="number" class="form-control" id="stamps_per_spin" 
+                                       name="stamps_per_spin" value="{{ config_data.stamp_rewards.game_play.stamps_per_spin or 0.1 }}" 
+                                       step="0.1" min="0" max="10">
+                            </div>
+                            <div class="col-6">
+                                <label for="bonus_multiplier" class="form-label">奖励倍数</label>
+                                <input type="number" class="form-control" id="bonus_multiplier" 
+                                       name="bonus_multiplier" value="{{ config_data.stamp_rewards.game_play.bonus_multiplier or 2.0 }}" 
+                                       step="0.1" min="1" max="10">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="max_stamps_per_day" class="form-label">每日最大邮票数</label>
+                            <input type="number" class="form-control" id="max_stamps_per_day" 
+                                   name="max_stamps_per_day" value="{{ config_data.stamp_rewards.game_play.max_stamps_per_day or 50 }}" min="1" max="1000">
+                        </div>
+                        
+                        <h6>购买奖励</h6>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="purchase_enabled" 
+                                   {% if config_data.stamp_rewards.purchase.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用购买奖励</label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label for="stamps_per_dollar" class="form-label">每美元邮票数</label>
+                                <input type="number" class="form-control" id="stamps_per_dollar" 
+                                       name="stamps_per_dollar" value="{{ config_data.stamp_rewards.purchase.stamps_per_dollar or 10 }}" min="1" max="100">
+                            </div>
+                            <div class="col-6">
+                                <label for="bonus_stamps" class="form-label">奖励邮票数</label>
+                                <input type="number" class="form-control" id="bonus_stamps" 
+                                       name="bonus_stamps" value="{{ config_data.stamp_rewards.purchase.bonus_stamps or 5 }}" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 邮票兑换配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exchange-alt me-2"></i>邮票兑换配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="exchange_enabled" 
+                                   {% if config_data.stamp_exchange.enabled %}checked{% endif %}>
+                            <label class="form-check-label">启用邮票兑换</label>
+                        </div>
+                        
+                        <h6>兑换汇率</h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label">普通→稀有</label>
+                                <input type="number" class="form-control" name="exchange_rate_1_to_2" 
+                                       value="{{ config_data.stamp_exchange.exchange_rates[0].rate if config_data.stamp_exchange.exchange_rates else 5 }}" min="1" max="100">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">稀有→史诗</label>
+                                <input type="number" class="form-control" name="exchange_rate_2_to_3" 
+                                       value="{{ config_data.stamp_exchange.exchange_rates[1].rate if config_data.stamp_exchange.exchange_rates|length > 1 else 3 }}" min="1" max="100">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label">史诗→传说</label>
+                                <input type="number" class="form-control" name="exchange_rate_3_to_4" 
+                                       value="{{ config_data.stamp_exchange.exchange_rates[2].rate if config_data.stamp_exchange.exchange_rates|length > 2 else 3 }}" min="1" max="100">
+                            </div>
+                            <div class="col-6">
+                                <label for="exchange_fee_percent" class="form-label">兑换手续费(%)</label>
+                                <input type="number" class="form-control" id="exchange_fee_percent" 
+                                       name="exchange_fee_percent" value="{{ config_data.stamp_exchange.exchange_fee_percent or 10 }}" min="0" max="50">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 配置信息 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary" onclick="saveConfig()">
+                            <i class="fas fa-save me-1"></i>保存配置
+                        </button>
+                        <button class="btn btn-warning" onclick="resetToDefault()">
+                            <i class="fas fa-undo me-1"></i>恢复默认配置
+                        </button>
+                        <button class="btn btn-info" onclick="previewConfig()">
+                            <i class="fas fa-eye me-1"></i>预览配置
+                        </button>
+                    </div>
+                    <hr>
+                    <small class="text-muted">
+                        最后更新时间：{{ config_data.last_updated or '未知' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function saveConfig() {
+    document.getElementById('stampsConfigForm').submit();
+}
+
+function resetToDefault() {
+    if (confirm('确定要恢复所有配置到默认值吗？此操作将覆盖当前所有配置！')) {
+        // 创建隐藏表单提交到重置路由
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("stamps.reset_stamps_config") }}';
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function previewConfig() {
+    const formData = new FormData(document.getElementById('stampsConfigForm'));
+    const config = {};
+    
+    for (let [key, value] of formData.entries()) {
+        config[key] = value;
+    }
+    
+    alert('配置预览：\n' + JSON.stringify(config, null, 2));
+}
+</script>
+{% endblock %}

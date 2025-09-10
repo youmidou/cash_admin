@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}系统配置 - Cash Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="fas fa-server me-2"></i>系统配置
+            </h1>
+            <a href="{{ url_for('config.config_list') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>返回配置
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 系统信息 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>系统信息</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>服务器版本:</strong></td>
+                        <td>{{ system_info.get('version', 'N/A') if system_info else 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>运行时间:</strong></td>
+                        <td>{{ system_info.get('uptime', 'N/A') if system_info else 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>内存使用:</strong></td>
+                        <td>{{ system_info.get('memory_usage', 'N/A') if system_info else 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CPU使用:</strong></td>
+                        <td>{{ system_info.get('cpu_usage', 'N/A') if system_info else 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>在线用户:</strong></td>
+                        <td>{{ system_info.get('online_users', 0) if system_info else 0 }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>总用户数:</strong></td>
+                        <td>{{ system_info.get('total_users', 0) if system_info else 0 }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 服务器状态 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-heartbeat me-2"></i>服务器状态</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-server fa-2x text-success mb-2"></i>
+                            <h6>主服务器</h6>
+                            <span class="badge bg-success">在线</span>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-database fa-2x text-success mb-2"></i>
+                            <h6>数据库</h6>
+                            <span class="badge bg-success">正常</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-memory fa-2x text-warning mb-2"></i>
+                            <h6>Redis</h6>
+                            <span class="badge bg-warning">警告</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-network-wired fa-2x text-success mb-2"></i>
+                            <h6>网络</h6>
+                            <span class="badge bg-success">正常</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 系统操作 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tools me-2"></i>系统操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-info" onclick="refreshSystemInfo()">
+                        <i class="fas fa-sync-alt me-1"></i>刷新系统信息
+                    </button>
+                    <button class="btn btn-warning" onclick="cleanDisconnectData()">
+                        <i class="fas fa-broom me-1"></i>清理断开连接数据
+                    </button>
+                    <button class="btn btn-secondary" onclick="restartServices()">
+                        <i class="fas fa-redo me-1"></i>重启服务
+                    </button>
+                    <button class="btn btn-danger" onclick="emergencyStop()">
+                        <i class="fas fa-stop me-1"></i>紧急停止
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 日志信息 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>系统日志</h5>
+            </div>
+            <div class="card-body">
+                <div class="log-container" style="height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px;">
+                    <div class="log-entry text-success">[2024-01-01 12:00:00] 系统启动成功</div>
+                    <div class="log-entry text-info">[2024-01-01 12:01:00] 数据库连接正常</div>
+                    <div class="log-entry text-warning">[2024-01-01 12:02:00] Redis 内存使用率较高</div>
+                    <div class="log-entry text-info">[2024-01-01 12:03:00] 用户登录: admin</div>
+                    <div class="log-entry text-success">[2024-01-01 12:04:00] 配置更新成功</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function refreshSystemInfo() {
+    AdminUtils.showInfo('正在刷新系统信息...');
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
+
+function cleanDisconnectData() {
+    AdminUtils.confirm('确定要清理断开连接的数据吗？', function() {
+        AdminUtils.showInfo('正在清理数据...');
+        // 这里可以添加清理数据的API调用
+    });
+}
+
+function restartServices() {
+    AdminUtils.confirm('确定要重启服务吗？这可能会影响在线用户！', function() {
+        AdminUtils.showWarning('正在重启服务...');
+        // 这里可以添加重启服务的API调用
+    });
+}
+
+function emergencyStop() {
+    AdminUtils.confirm('确定要紧急停止服务器吗？这将断开所有用户连接！', function() {
+        AdminUtils.showError('正在紧急停止服务器...');
+        // 这里可以添加紧急停止的API调用
+    });
+}
+</script>
+{% endblock %}

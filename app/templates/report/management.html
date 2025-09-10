@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}报表管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>报表管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报表类型选择 -->
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-tachometer-alt fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">概览报表</h5>
+                    <p class="card-text text-muted">查看游戏整体运营数据，包括用户、营收、主题等关键指标</p>
+                    <a href="{{ url_for('report.overview_report') }}" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-1"></i>查看概览
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">用户报表</h5>
+                    <p class="card-text text-muted">分析用户行为、留存率、用户分群等用户相关数据</p>
+                    <a href="{{ url_for('report.user_report') }}" class="btn btn-success">
+                        <i class="fas fa-users me-1"></i>查看用户报表
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-palette fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">主题报表</h5>
+                    <p class="card-text text-muted">分析各主题游戏的表现，包括收入、用户数、RTP等</p>
+                    <a href="{{ url_for('report.theme_report') }}" class="btn btn-info">
+                        <i class="fas fa-palette me-1"></i>查看主题报表
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-dollar-sign fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">营收报表</h5>
+                    <p class="card-text text-muted">分析收入来源、支付方式、收入趋势等财务数据</p>
+                    <a href="{{ url_for('report.revenue_report') }}" class="btn btn-warning">
+                        <i class="fas fa-dollar-sign me-1"></i>查看营收报表
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-chart-area fa-3x text-danger"></i>
+                    </div>
+                    <h5 class="card-title">活动报表</h5>
+                    <p class="card-text text-muted">分析用户活跃度、会话时长、功能使用情况等</p>
+                    <a href="{{ url_for('report.activity_report') }}" class="btn btn-danger">
+                        <i class="fas fa-chart-area me-1"></i>查看活动报表
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-cog fa-3x text-secondary"></i>
+                    </div>
+                    <h5 class="card-title">自定义报表</h5>
+                    <p class="card-text text-muted">创建自定义报表，选择特定维度和指标进行分析</p>
+                    <button class="btn btn-secondary" disabled>
+                        <i class="fas fa-cog me-1"></i>即将推出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速报表生成 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>快速报表生成
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">报表类型</label>
+                                <select class="form-select" id="quickReportType">
+                                    <option value="overview">概览报表</option>
+                                    <option value="user">用户报表</option>
+                                    <option value="theme">主题报表</option>
+                                    <option value="revenue">营收报表</option>
+                                    <option value="activity">活动报表</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">时间范围</label>
+                                <select class="form-select" id="quickDateRange">
+                                    <option value="today">今天</option>
+                                    <option value="week">本周</option>
+                                    <option value="month">本月</option>
+                                    <option value="quarter">本季度</option>
+                                    <option value="year">本年</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">主题ID（可选）</label>
+                                <input type="number" class="form-control" id="quickThemeId" placeholder="留空则包含所有主题">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary" onclick="generateQuickReport()">
+                                        <i class="fas fa-play me-1"></i>生成报表
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报表说明 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>报表说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-tachometer-alt me-2"></i>概览报表</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>整体运营指标</li>
+                                <li><i class="fas fa-check text-success me-2"></i>用户增长趋势</li>
+                                <li><i class="fas fa-check text-success me-2"></i>收入利润分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>热门主题排行</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-users me-2"></i>用户报表</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>用户统计信息</li>
+                                <li><i class="fas fa-check text-success me-2"></i>用户分群分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>留存率分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>高价值用户排行</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-palette me-2"></i>主题报表</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>主题表现对比</li>
+                                <li><i class="fas fa-check text-success me-2"></i>收入贡献分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>用户参与度</li>
+                                <li><i class="fas fa-check text-success me-2"></i>RTP和流行度</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-dollar-sign me-2"></i>营收报表</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>收入来源分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>支付方式统计</li>
+                                <li><i class="fas fa-check text-success me-2"></i>收入趋势分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>增长率和预测</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-chart-area me-2"></i>活动报表</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>用户活跃度分析</li>
+                                <li><i class="fas fa-check text-success me-2"></i>会话时长统计</li>
+                                <li><i class="fas fa-check text-success me-2"></i>功能使用情况</li>
+                                <li><i class="fas fa-check text-success me-2"></i>用户参与度分析</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>使用提示：</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>所有报表数据实时更新，反映当前游戏状态</li>
+                            <li>支持多种时间范围：今天、本周、本月、本季度、本年</li>
+                            <li>可以按主题ID筛选特定主题的数据</li>
+                            <li>报表数据可用于业务决策和运营优化</li>
+                            <li>建议定期查看报表以监控游戏运营状况</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateQuickReport() {
+    const reportType = document.getElementById('quickReportType').value;
+    const dateRange = document.getElementById('quickDateRange').value;
+    const themeId = document.getElementById('quickThemeId').value;
+    
+    let url = '';
+    switch(reportType) {
+        case 'overview':
+            url = '{{ url_for("report.overview_report") }}';
+            break;
+        case 'user':
+            url = '{{ url_for("report.user_report") }}';
+            break;
+        case 'theme':
+            url = '{{ url_for("report.theme_report") }}';
+            break;
+        case 'revenue':
+            url = '{{ url_for("report.revenue_report") }}';
+            break;
+        case 'activity':
+            url = '{{ url_for("report.activity_report") }}';
+            break;
+    }
+    
+    url += `?date_range=${dateRange}`;
+    if (themeId) {
+        url += `&theme_id=${themeId}`;
+    }
+    
+    window.location.href = url;
+}
+</script>
+{% endblock %}
+

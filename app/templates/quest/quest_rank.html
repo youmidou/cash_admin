@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}任务排行榜{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-trophy me-2"></i>任务排行榜
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('quest.quest_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回任务管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- 排行榜统计 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>排行榜统计
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-primary">{{ rank_data.rank_statistics.total_players }}</h4>
+                                <small class="text-muted">总玩家数</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-success">{{ rank_data.rank_statistics.average_completion_rate }}%</h4>
+                                <small class="text-muted">平均完成率</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-warning">{{ rank_data.rank_statistics.top_completion_rate }}%</h4>
+                                <small class="text-muted">最高完成率</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-info">{{ rank_data.quest_type }}</h4>
+                                <small class="text-muted">任务类型</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>任务类型分布</h6>
+                            <ul class="list-unstyled">
+                                <li>每日任务: {{ rank_data.rank_statistics.quest_type_distribution.daily }}%</li>
+                                <li>每周任务: {{ rank_data.rank_statistics.quest_type_distribution.weekly }}%</li>
+                                <li>特殊任务: {{ rank_data.rank_statistics.quest_type_distribution.special }}%</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>排行榜信息</h6>
+                            <ul class="list-unstyled">
+                                <li>显示数量: {{ limit }}</li>
+                                <li>任务类型: {{ rank_data.quest_type }}</li>
+                                <li>更新时间: {{ rank_data.last_updated }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>快速筛选</h6>
+                            <div class="btn-group-vertical w-100">
+                                <a href="{{ url_for('quest.quest_rank', quest_type='all') }}" 
+                                   class="btn btn-sm btn-outline-primary">全部任务</a>
+                                <a href="{{ url_for('quest.quest_rank', quest_type='daily') }}" 
+                                   class="btn btn-sm btn-outline-success">每日任务</a>
+                                <a href="{{ url_for('quest.quest_rank', quest_type='weekly') }}" 
+                                   class="btn btn-sm btn-outline-warning">每周任务</a>
+                                <a href="{{ url_for('quest.quest_rank', quest_type='special') }}" 
+                                   class="btn btn-sm btn-outline-info">特殊任务</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 排行榜列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>排行榜列表
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>用户ID</th>
+                                    <th>用户名</th>
+                                    <th>任务进度</th>
+                                    <th>完成率</th>
+                                    <th>最后更新</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for player in rank_data.rank_list %}
+                                <tr>
+                                    <td>
+                                        {% if player.rank == 1 %}
+                                            <i class="fas fa-crown text-warning"></i> 1
+                                        {% elif player.rank == 2 %}
+                                            <i class="fas fa-medal text-secondary"></i> 2
+                                        {% elif player.rank == 3 %}
+                                            <i class="fas fa-award text-warning"></i> 3
+                                        {% else %}
+                                            {{ player.rank }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ player.uid }}</span>
+                                    </td>
+                                    <td>{{ player.username }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ player.completion_rate }}%">
+                                                {{ player.quest_progress }}/{{ player.quest_target }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if player.completion_rate >= 90 else 'warning' if player.completion_rate >= 70 else 'danger' }}">
+                                            {{ player.completion_rate }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ player.last_update }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- 排行榜说明 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>排行榜说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>排名规则</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-check text-success me-2"></i>按任务完成率排序</li>
+                        <li><i class="fas fa-check text-success me-2"></i>完成率相同时按最后更新时间排序</li>
+                        <li><i class="fas fa-check text-success me-2"></i>实时更新排行榜数据</li>
+                    </ul>
+                    
+                    <h6>任务类型</h6>
+                    <ul class="list-unstyled small">
+                        <li><span class="badge bg-success me-2">每日任务</span>每日可完成的任务</li>
+                        <li><span class="badge bg-warning me-2">每周任务</span>每周可完成的任务</li>
+                        <li><span class="badge bg-info me-2">特殊任务</span>特殊事件和限时任务</li>
+                    </ul>
+                    
+                    <h6>完成率颜色</h6>
+                    <ul class="list-unstyled small">
+                        <li><span class="badge bg-success me-2">90%+</span>优秀</li>
+                        <li><span class="badge bg-warning me-2">70-89%</span>良好</li>
+                        <li><span class="badge bg-danger me-2">70%以下</span>需努力</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 快速操作 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i>快速操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('quest.quest_info') }}" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>查询任务信息
+                        </a>
+                        <a href="{{ url_for('quest.reset_quest') }}" class="btn btn-warning">
+                            <i class="fas fa-redo me-1"></i>重置任务
+                        </a>
+                        <a href="{{ url_for('quest.clean_quest_data') }}" class="btn btn-danger">
+                            <i class="fas fa-broom me-1"></i>清理数据
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

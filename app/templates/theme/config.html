@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}主题配置 - 主题{{ theme_info.get('data', {}).get('theme_id', 'N/A') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-cog me-2"></i>主题配置
+                </h1>
+                <a href="{{ url_for('theme.theme_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回主题列表
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-edit me-2"></i>配置主题{{ theme_info.get('data', {}).get('theme_id', 'N/A') }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('theme.theme_config', theme_id=theme_info.get('data', {}).get('theme_id', 1)) }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-sliders-h me-2"></i>基础配置</h6>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="active" name="active" 
+                                               {% if config_info.get('data', {}).get('config', {}).get('active', True) %}checked{% endif %}>
+                                        <label class="form-check-label" for="active">
+                                            启用主题
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="min_bet" class="form-label">最小下注</label>
+                                    <input type="number" class="form-control" id="min_bet" name="min_bet" 
+                                           value="{{ config_info.get('data', {}).get('config', {}).get('min_bet', 1000) }}" 
+                                           min="0" step="100">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="max_bet" class="form-label">最大下注</label>
+                                    <input type="number" class="form-control" id="max_bet" name="max_bet" 
+                                           value="{{ config_info.get('data', {}).get('config', {}).get('max_bet', 1000000) }}" 
+                                           min="0" step="1000">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="rtp" class="form-label">RTP (Return to Player)</label>
+                                    <input type="number" class="form-control" id="rtp" name="rtp" 
+                                           value="{{ config_info.get('data', {}).get('config', {}).get('rtp', 0.96) }}" 
+                                           min="0" max="1" step="0.01">
+                                    <div class="form-text">RTP值应在0-1之间，推荐0.95-0.98</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-star me-2"></i>特殊功能</h6>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_bonus" name="has_bonus" 
+                                               {% if config_info.get('data', {}).get('config', {}).get('has_bonus', False) %}checked{% endif %}>
+                                        <label class="form-check-label" for="has_bonus">
+                                            启用奖励功能
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_free_spins" name="has_free_spins" 
+                                               {% if config_info.get('data', {}).get('config', {}).get('has_free_spins', False) %}checked{% endif %}>
+                                        <label class="form-check-label" for="has_free_spins">
+                                            启用免费旋转
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_jackpot" name="has_jackpot" 
+                                               {% if config_info.get('data', {}).get('config', {}).get('has_jackpot', False) %}checked{% endif %}>
+                                        <label class="form-check-label" for="has_jackpot">
+                                            启用累积奖池
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="jackpot_multiplier" class="form-label">奖池倍数</label>
+                                    <input type="number" class="form-control" id="jackpot_multiplier" name="jackpot_multiplier" 
+                                           value="{{ config_info.get('data', {}).get('config', {}).get('jackpot_multiplier', 1.0) }}" 
+                                           min="1" max="10" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('theme.theme_detail', theme_id=theme_info.get('data', {}).get('theme_id', 1)) }}" 
+                               class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>返回详情
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>保存配置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>主题信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if theme_info.get('data') %}
+                        <table class="table table-borderless table-sm">
+                            <tr>
+                                <td><strong>主题ID:</strong></td>
+                                <td>{{ theme_info.data.get('theme_id', 'N/A') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>主题名称:</strong></td>
+                                <td>{{ theme_info.data.get('theme_name', 'N/A') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>主题类型:</strong></td>
+                                <td>{{ theme_info.data.get('theme_type', 'N/A') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>主题等级:</strong></td>
+                                <td>{{ theme_info.data.get('level', 'N/A') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>基础下注:</strong></td>
+                                <td>{{ "{:,}".format(theme_info.data.get('base_bet', 0)) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>累积奖池:</strong></td>
+                                <td>
+                                    {% if theme_info.data.get('jackpot') %}
+                                        <span class="badge bg-success">启用</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">禁用</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <p>无法获取主题信息</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i>快速操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('theme.theme_detail', theme_id=theme_info.get('data', {}).get('theme_id', 1)) }}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-1"></i>主题详情
+                        </a>
+                        <a href="{{ url_for('theme.theme_users', theme_id=theme_info.get('data', {}).get('theme_id', 1)) }}" 
+                           class="btn btn-outline-info">
+                            <i class="fas fa-users me-1"></i>主题用户
+                        </a>
+                        <a href="{{ url_for('theme.theme_list') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-1"></i>主题列表
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>配置说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>RTP:</strong> 玩家回报率，影响游戏平衡性</li>
+                            <li><strong>下注范围:</strong> 控制玩家可下注的金额范围</li>
+                            <li><strong>特殊功能:</strong> 影响游戏玩法和奖励机制</li>
+                            <li><strong>配置修改:</strong> 修改后需要重启服务器生效</li>
+                        </ul>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

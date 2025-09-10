@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}添加收件箱物品{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-inbox me-2"></i>添加收件箱物品
+                </h1>
+                <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回奖励管理
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-plus me-2"></i>添加物品到收件箱
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="user_id" class="form-label">用户ID <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="user_id" name="user_id" required>
+                                    <div class="form-text">请输入要添加物品的用户ID</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="item_type" class="form-label">物品类型 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="item_type" name="item_type" required>
+                                        <option value="">请选择物品类型</option>
+                                        <option value="coins">金币</option>
+                                        <option value="gems">宝石</option>
+                                        <option value="boosters">加速器</option>
+                                        <option value="decorations">装饰品</option>
+                                        <option value="special_items">特殊道具</option>
+                                        <option value="vip_items">VIP道具</option>
+                                        <option value="event_items">活动道具</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="item_id" class="form-label">物品ID</label>
+                                    <input type="text" class="form-control" id="item_id" name="item_id" 
+                                           placeholder="可选，特定物品的ID">
+                                    <div class="form-text">特定物品的ID，可选填</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">数量</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                                           value="1" min="1">
+                                    <div class="form-text">物品数量，默认为1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">物品标题</label>
+                                    <input type="text" class="form-control" id="title" name="title" 
+                                           value="管理员礼物" placeholder="物品在收件箱中显示的标题">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">物品描述</label>
+                                    <input type="text" class="form-control" id="description" name="description" 
+                                           placeholder="物品的详细描述">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('reward.reward_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>添加物品
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>物品类型说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-coins me-2 text-warning"></i>金币</h6>
+                        <p class="small text-muted mb-2">游戏内主要货币</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-gem me-2 text-primary"></i>宝石</h6>
+                        <p class="small text-muted mb-2">高级货币</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-rocket me-2 text-success"></i>加速器</h6>
+                        <p class="small text-muted mb-2">临时提升游戏体验</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-palette me-2 text-info"></i>装饰品</h6>
+                        <p class="small text-muted mb-2">个性化装饰道具</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-star me-2 text-warning"></i>特殊道具</h6>
+                        <p class="small text-muted mb-2">具有特殊功能的道具</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-crown me-2 text-danger"></i>VIP道具</h6>
+                        <p class="small text-muted mb-2">VIP专属道具</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-calendar me-2 text-success"></i>活动道具</h6>
+                        <p class="small text-muted mb-2">限时活动相关道具</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>使用提示
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>物品会出现在用户收件箱中</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>用户需要手动领取物品</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>可以设置物品标题和描述</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>支持批量添加相同物品</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

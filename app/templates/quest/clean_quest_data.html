@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}清理任务数据{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-broom me-2"></i>清理任务数据
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('quest.quest_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回任务管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-broom me-2"></i>清理任务数据
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="clean_type" class="form-label">清理类型</label>
+                            <select class="form-select" id="clean_type" name="clean_type">
+                                <option value="all">全部数据</option>
+                                <option value="expired">过期任务</option>
+                                <option value="completed">已完成任务</option>
+                                <option value="history">历史记录</option>
+                                <option value="statistics">统计数据</option>
+                            </select>
+                            <div class="form-text">选择要清理的数据类型</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="days_old" class="form-label">数据天数</label>
+                            <input type="number" class="form-control" id="days_old" name="days_old" 
+                                   value="30" min="1" max="365">
+                            <div class="form-text">清理多少天前的数据（1-365天）</div>
+                        </div>
+                        
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>危险操作:</strong> 清理任务数据将永久删除指定时间范围内的数据，此操作不可逆！请谨慎操作。
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>建议:</strong> 定期清理过期数据可以优化系统性能，建议每月清理一次30天前的数据。
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-broom me-1"></i>清理数据
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>清理说明
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>清理类型</h6>
+                    <ul class="list-unstyled small">
+                        <li><strong>全部数据:</strong> 清理所有指定时间范围内的数据</li>
+                        <li><strong>过期任务:</strong> 只清理已过期的任务数据</li>
+                        <li><strong>已完成任务:</strong> 只清理已完成的任务记录</li>
+                        <li><strong>历史记录:</strong> 只清理任务历史记录</li>
+                        <li><strong>统计数据:</strong> 只清理任务统计数据</li>
+                    </ul>
+                    
+                    <h6>清理效果</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-check text-success me-2"></i>释放数据库空间</li>
+                        <li><i class="fas fa-check text-success me-2"></i>提高查询性能</li>
+                        <li><i class="fas fa-check text-success me-2"></i>优化系统运行</li>
+                        <li><i class="fas fa-check text-success me-2"></i>减少存储成本</li>
+                    </ul>
+                    
+                    <h6>安全提示</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>操作前请备份重要数据</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>建议在低峰期执行</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>确认清理范围和时间</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>监控系统运行状态</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>清理统计
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h5 class="text-primary">1,250</h5>
+                            <small class="text-muted">待清理记录</small>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="text-success">30</h5>
+                            <small class="text-muted">清理天数</small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('quest.quest_info') }}" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>查询任务信息
+                        </a>
+                        <a href="{{ url_for('quest.quest_rank') }}" class="btn btn-info">
+                            <i class="fas fa-trophy me-1"></i>查看排行榜
+                        </a>
+                        <a href="{{ url_for('quest.reset_quest') }}" class="btn btn-warning">
+                            <i class="fas fa-redo me-1"></i>重置任务
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

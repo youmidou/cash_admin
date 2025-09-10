@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}系统管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-cogs me-2"></i>系统管理
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系统信息卡片 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>系统信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if system_info and system_info.get('error') is none %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-primary">{{ system_info.get('online_user_num', 0) }}</h4>
+                                    <p class="text-muted mb-0">在线用户数</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-success">{{ system_info.get('total_users', 0) }}</h4>
+                                    <p class="text-muted mb-0">总用户数</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-warning">{{ system_info.get('server_uptime', 'N/A') }}</h4>
+                                    <p class="text-muted mb-0">服务器运行时间</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-info">{{ system_info.get('server_version', 'N/A') }}</h4>
+                                    <p class="text-muted mb-0">服务器版本</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                            <p>无法获取系统信息</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系统管理功能 -->
+    <div class="row">
+        <!-- 更新系统配置 -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-edit me-2"></i>更新系统配置
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('system.update_config') }}">
+                        <div class="mb-3">
+                            <label for="config_server_name" class="form-label">服务器名称</label>
+                            <input type="text" class="form-control" id="config_server_name" name="config_server_name" 
+                                   placeholder="输入服务器名称">
+                        </div>
+                        <div class="mb-3">
+                            <label for="config_max_users" class="form-label">最大用户数</label>
+                            <input type="number" class="form-control" id="config_max_users" name="config_max_users" 
+                                   placeholder="输入最大用户数">
+                        </div>
+                        <div class="mb-3">
+                            <label for="config_maintenance_mode" class="form-label">维护模式</label>
+                            <select class="form-select" id="config_maintenance_mode" name="config_maintenance_mode">
+                                <option value="false">关闭</option>
+                                <option value="true">开启</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>更新配置
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置今日开始时间 -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>设置今日开始时间
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('system.set_today_begin') }}">
+                        <div class="mb-3">
+                            <label for="begin_time" class="form-label">开始时间</label>
+                            <input type="datetime-local" class="form-control" id="begin_time" name="begin_time" 
+                                   required>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                设置今日开始时间，影响每日任务、签到等功能的重置时间
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-calendar-alt me-1"></i>设置时间
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 重置系统时间 -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-redo me-2"></i>重置系统时间
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('system.reset_time') }}">
+                        <div class="mb-3">
+                            <label for="reset_type" class="form-label">重置类型</label>
+                            <select class="form-select" id="reset_type" name="reset_type" required>
+                                <option value="all">全部重置</option>
+                                <option value="daily">每日重置</option>
+                                <option value="weekly">每周重置</option>
+                                <option value="monthly">每月重置</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>警告：</strong>重置系统时间将影响所有用户的相关数据，请谨慎操作！
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-danger" 
+                                onclick="return confirm('确定要重置系统时间吗？此操作不可撤销！')">
+                            <i class="fas fa-exclamation-triangle me-1"></i>重置时间
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统操作日志 -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>系统操作日志
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>操作</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2025-09-05 17:00:00</td>
+                                    <td>系统配置更新</td>
+                                    <td><span class="badge bg-success">成功</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2025-09-05 16:30:00</td>
+                                    <td>今日开始时间设置</td>
+                                    <td><span class="badge bg-success">成功</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2025-09-05 16:00:00</td>
+                                    <td>系统时间重置</td>
+                                    <td><span class="badge bg-warning">部分成功</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 设置默认的今日开始时间
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    const datetimeLocal = `${year}-${month}-${day}T${hours}:${minutes}`;
+    document.getElementById('begin_time').value = datetimeLocal;
+});
+</script>
+{% endblock %}
+

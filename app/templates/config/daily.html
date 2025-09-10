@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}每日配置{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-calendar-day me-2"></i>每日配置
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('config.config_management') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>返回配置管理
+                    </a>
+                    <button class="btn btn-primary" onclick="saveConfig()">
+                        <i class="fas fa-save me-1"></i>保存配置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="dailyConfigForm" method="POST" action="{{ url_for('config.update_daily_config') }}">
+        <div class="row">
+            <!-- 每日奖励配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-gift me-2"></i>每日奖励配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="daily_bonus_enabled" 
+                                   name="daily_bonus_enabled" {% if config_data.daily_bonus.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="daily_bonus_enabled">
+                                启用每日奖励
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="daily_bonus_base_coins" class="form-label">基础金币数量</label>
+                            <input type="number" class="form-control" id="daily_bonus_base_coins" 
+                                   name="daily_bonus_base_coins" value="{{ config_data.daily_bonus.base_coins or 10000 }}" min="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="daily_bonus_multiplier" class="form-label">奖励倍数</label>
+                            <input type="number" class="form-control" id="daily_bonus_multiplier" 
+                                   name="daily_bonus_multiplier" value="{{ config_data.daily_bonus.multiplier or 1.5 }}" 
+                                   step="0.1" min="0.1" max="10">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="daily_bonus_max_days" class="form-label">最大连续天数</label>
+                            <input type="number" class="form-control" id="daily_bonus_max_days" 
+                                   name="daily_bonus_max_days" value="{{ config_data.daily_bonus.max_days or 7 }}" min="1" max="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每日任务配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-tasks me-2"></i>每日任务配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="daily_mission_enabled" 
+                                   name="daily_mission_enabled" {% if config_data.daily_mission.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="daily_mission_enabled">
+                                启用每日任务
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="daily_mission_reset_time" class="form-label">重置时间</label>
+                            <input type="time" class="form-control" id="daily_mission_reset_time" 
+                                   name="daily_mission_reset_time" value="{{ config_data.daily_mission.reset_time or '00:00:00' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="daily_mission_count" class="form-label">每日任务数量</label>
+                            <input type="number" class="form-control" id="daily_mission_count" 
+                                   name="daily_mission_count" value="{{ config_data.daily_mission.missions_per_day or 3 }}" min="1" max="10">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="daily_mission_multiplier" class="form-label">奖励倍数</label>
+                            <input type="number" class="form-control" id="daily_mission_multiplier" 
+                                   name="daily_mission_multiplier" value="{{ config_data.daily_mission.reward_multiplier or 1.2 }}" 
+                                   step="0.1" min="0.1" max="10">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每日事件配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-calendar-check me-2"></i>每日事件配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="daily_events_enabled" 
+                                   name="daily_events_enabled" {% if config_data.daily_events.enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="daily_events_enabled">
+                                启用每日事件
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">事件1</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="text" class="form-control mb-2" name="event1_name" 
+                                           value="{{ config_data.daily_events.events[0].name if config_data.daily_events.events else '双倍经验' }}" 
+                                           placeholder="事件名称">
+                                </div>
+                                <div class="col-3">
+                                    <input type="time" class="form-control mb-2" name="event1_start" 
+                                           value="{{ config_data.daily_events.events[0].start_time if config_data.daily_events.events else '10:00:00' }}">
+                                </div>
+                                <div class="col-3">
+                                    <input type="time" class="form-control mb-2" name="event1_end" 
+                                           value="{{ config_data.daily_events.events[0].end_time if config_data.daily_events.events else '12:00:00' }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">事件2</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="text" class="form-control mb-2" name="event2_name" 
+                                           value="{{ config_data.daily_events.events[1].name if config_data.daily_events.events|length > 1 else '金币翻倍' }}" 
+                                           placeholder="事件名称">
+                                </div>
+                                <div class="col-3">
+                                    <input type="time" class="form-control mb-2" name="event2_start" 
+                                           value="{{ config_data.daily_events.events[1].start_time if config_data.daily_events.events|length > 1 else '18:00:00' }}">
+                                </div>
+                                <div class="col-3">
+                                    <input type="time" class="form-control mb-2" name="event2_end" 
+                                           value="{{ config_data.daily_events.events[1].end_time if config_data.daily_events.events|length > 1 else '20:00:00' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每日限制配置 -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-shield-alt me-2"></i>每日限制配置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="max_spins" class="form-label">最大旋转次数</label>
+                            <input type="number" class="form-control" id="max_spins" 
+                                   name="max_spins" value="{{ config_data.daily_limits.max_spins or 1000 }}" min="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="max_bet" class="form-label">最大下注金额</label>
+                            <input type="number" class="form-control" id="max_bet" 
+                                   name="max_bet" value="{{ config_data.daily_limits.max_bet or 1000000 }}" min="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="max_win" class="form-label">最大获胜金额</label>
+                            <input type="number" class="form-control" id="max_win" 
+                                   name="max_win" value="{{ config_data.daily_limits.max_win or 10000000 }}" min="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 配置信息 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary" onclick="saveConfig()">
+                            <i class="fas fa-save me-1"></i>保存配置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetConfig()">
+                            <i class="fas fa-undo me-1"></i>重置配置
+                        </button>
+                        <button class="btn btn-info" onclick="previewConfig()">
+                            <i class="fas fa-eye me-1"></i>预览配置
+                        </button>
+                    </div>
+                    <hr>
+                    <small class="text-muted">
+                        最后更新时间：{{ config_data.last_updated or '未知' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function saveConfig() {
+    document.getElementById('dailyConfigForm').submit();
+}
+
+function resetConfig() {
+    if (confirm('确定要重置所有配置到默认值吗？')) {
+        location.reload();
+    }
+}
+
+function previewConfig() {
+    const formData = new FormData(document.getElementById('dailyConfigForm'));
+    const config = {};
+    
+    for (let [key, value] of formData.entries()) {
+        config[key] = value;
+    }
+    
+    alert('配置预览：\n' + JSON.stringify(config, null, 2));
+}
+</script>
+{% endblock %}

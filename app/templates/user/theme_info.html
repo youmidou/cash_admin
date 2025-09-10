@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}用户主题信息 - 用户{{ user_id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-palette me-2"></i>用户主题信息
+                </h1>
+                <a href="{{ url_for('user.user_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>返回用户列表
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-palette me-2"></i>用户{{ user_id }}主题信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if theme_info %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-star me-2"></i>当前主题</h6>
+                                <p class="text-muted">主题ID: {{ theme_info.get('current_theme', 'N/A') }}</p>
+                                
+                                <h6><i class="fas fa-unlock me-2"></i>已解锁主题</h6>
+                                <div class="mb-3">
+                                    {% for theme_id in theme_info.get('unlocked_themes', []) %}
+                                        <span class="badge bg-success me-1 mb-1">主题{{ theme_id }}</span>
+                                    {% endfor %}
+                                </div>
+                                
+                                <h6><i class="fas fa-heart me-2"></i>收藏主题</h6>
+                                <div class="mb-3">
+                                    {% for theme_id in theme_info.get('favorite_themes', []) %}
+                                        <span class="badge bg-danger me-1 mb-1">主题{{ theme_id }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-trophy me-2"></i>主题成就</h6>
+                                <div class="mb-3">
+                                    {% for achievement in theme_info.get('theme_achievements', []) %}
+                                        <span class="badge bg-warning me-1 mb-1">{{ achievement }}</span>
+                                    {% endfor %}
+                                </div>
+                                
+                                <h6><i class="fas fa-chart-bar me-2"></i>主题进度</h6>
+                                <div class="mb-3">
+                                    {% for theme_id, progress in theme_info.get('theme_progress', {}).items() %}
+                                        <div class="mb-2">
+                                            <small>主题{{ theme_id }}: {{ progress }}%</small>
+                                            <div class="progress" style="height: 5px;">
+                                                <div class="progress-bar" style="width: {{ progress }}%"></div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                            <p>无法获取用户主题信息</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 设置主题信息表单 -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-edit me-2"></i>设置主题信息
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('user.set_user_theme_info', user_id=user_id) }}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="current_theme" class="form-label">当前主题</label>
+                                    <select class="form-select" id="current_theme" name="current_theme">
+                                        <option value="">请选择</option>
+                                        {% for i in range(1, 21) %}
+                                        <option value="{{ i }}" 
+                                                {% if theme_info and theme_info.get('current_theme') == i %}selected{% endif %}>
+                                            主题{{ i }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">已解锁主题</label>
+                                    <div class="form-check">
+                                        {% for i in range(1, 11) %}
+                                        <input class="form-check-input" type="checkbox" 
+                                               id="unlocked_{{ i }}" name="unlocked_themes" value="{{ i }}"
+                                               {% if theme_info and i in theme_info.get('unlocked_themes', []) %}checked{% endif %}>
+                                        <label class="form-check-label" for="unlocked_{{ i }}">
+                                            主题{{ i }}
+                                        </label><br>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">收藏主题</label>
+                                    <div class="form-check">
+                                        {% for i in range(1, 11) %}
+                                        <input class="form-check-input" type="checkbox" 
+                                               id="favorite_{{ i }}" name="favorite_themes" value="{{ i }}"
+                                               {% if theme_info and i in theme_info.get('favorite_themes', []) %}checked{% endif %}>
+                                        <label class="form-check-label" for="favorite_{{ i }}">
+                                            主题{{ i }}
+                                        </label><br>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>保存设置
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i>快速操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('user.user_detail', user_id=user_id) }}" class="btn btn-primary">
+                            <i class="fas fa-user me-1"></i>查看用户详情
+                        </a>
+                        <a href="{{ url_for('user.user_server_info', user_id=user_id) }}" class="btn btn-info">
+                            <i class="fas fa-server me-1"></i>服务器信息
+                        </a>
+                        <a href="{{ url_for('theme.theme_list') }}" class="btn btn-success">
+                            <i class="fas fa-list me-1"></i>主题列表
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>主题统计
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if theme_info %}
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-primary">{{ theme_info.get('unlocked_themes', [])|length }}</h4>
+                                <small class="text-muted">已解锁</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-danger">{{ theme_info.get('favorite_themes', [])|length }}</h4>
+                                <small class="text-muted">收藏</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-warning">{{ theme_info.get('theme_achievements', [])|length }}</h4>
+                                <small class="text-muted">成就</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-info">{{ theme_info.get('theme_progress', {})|length }}</h4>
+                                <small class="text-muted">进度</small>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <p>暂无统计数据</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

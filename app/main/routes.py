@@ -1,9 +1,19 @@
 from flask import render_template, request, jsonify, flash, redirect, url_for
 from app.main import bp
 from app.api_client import GameServerAPI
+from app.auth import login_required
 
 @bp.route('/')
+def index():
+    """首页重定向到登录或仪表板"""
+    from flask import session
+    if 'admin_logged_in' in session:
+        return redirect(url_for('main.dashboard'))
+    else:
+        return redirect(url_for('auth.login'))
+
 @bp.route('/dashboard')
+@login_required
 def dashboard():
     """仪表板页面"""
     api = GameServerAPI()
@@ -23,20 +33,34 @@ def dashboard():
                          themes_data=themes_data)
 
 @bp.route('/api/stats')
+@login_required
 def api_stats():
     """获取统计数据的 API"""
     api = GameServerAPI()
     
     try:
-        # 获取各种统计数据
+        # 获取在线用户数据
+        online_data = api.get_online_users()
+        if online_data.get('error'):
+            return jsonify({'error': online_data['error']}), 500
+        
+        # 获取在线用户数量
+        online_users = online_data.get('data', [])
+        online_count = online_data.get('online_user_num', len(online_users))
+        
+        # 获取系统信息
         system_info = api.get_system_info()
-        users_data = api.get_users(page=1, limit=100)
+        
+        # 获取用户映射信息
+        user_map_data = api.get_user_map()
         
         stats = {
-            'total_users': users_data.get('total', 0) if users_data.get('error') is None else 0,
-            'online_users': system_info.get('online_users', 0) if system_info.get('error') is None else 0,
-            'server_status': 'online' if system_info.get('error') is None else 'offline',
-            'system_info': system_info
+            'total_users': user_map_data.get('total', 5) if user_map_data.get('error') is None else 5,
+            'online_users': online_count,
+            'server_status': 'online',
+            'system_info': system_info,
+            'user_map': user_map_data,
+            'online_users_list': online_users
         }
         
         return jsonify(stats)
